@@ -1,7 +1,7 @@
 const runId = crypto.randomUUID();
 const startedAt = new Date();
 
-const lookbackHours = process.env.LOOKBACK_HOURS ?? "24";
+const lookbackHours = process.env.LOOKBACK_HOURS;
 
 console.log("Email status updater started", {
   runId,
