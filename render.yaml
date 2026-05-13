@@ -1,0 +1,17 @@
+services:
+- type: cron
+  name: job-email-status-updater
+  runtime: node
+  plan: starter
+  schedule: "0 7 * * *"
+  buildCommand: "npm ci && npm run build"
+  startCommand: "npm start"
+  envVars: 
+    - key: NODE_ENV
+      value: productionn
+    - key: LOOKBACK_HOURS
+      value: "24"
+    - key: APP_TIMEZONE
+      value: Europe/London
+    - key: DRY_RUN
+      value: "true"
