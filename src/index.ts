@@ -1,7 +1,9 @@
+import config from "./config";
+
 const runId = crypto.randomUUID();
 const startedAt = new Date();
 
-const lookbackHours = process.env.LOOKBACK_HOURS;
+const { lookbackHours } = config();
 
 console.log("Email status updater started", {
   runId,
