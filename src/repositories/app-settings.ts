@@ -30,7 +30,6 @@ export async function setSetting(key: string, value: string) {
   const fields = {
     Key: key,
     Value: value,
-    "Updated At": new Date().toISOString(),
   };
 
   if (existingRecord) {

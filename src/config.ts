@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 export default function config() {
   const lookbackHours = process.env.LOOKBACK_HOURS ?? "24";
 
