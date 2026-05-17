@@ -22,6 +22,7 @@
     "node": ">=20"
   },
   "dependencies": {
+    "@azure/msal-node": "^5.2.1",
     "dotenv": "^17.4.2"
   }
 }
