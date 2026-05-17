@@ -1,4 +1,5 @@
 import config from "./config.js";
+import { getLatestMessages } from "./services/microsoft-graph/messages.js";
 import { getLastSuccessfulRunAt, setLastSuccessfulRunAt, } from "./services/run-state.js";
 const runId = crypto.randomUUID();
 const startedAt = new Date();
@@ -10,9 +11,17 @@ console.log("Email status updater started", {
     lookbackHours,
     lastSuccessfulRunAt,
 });
-console.log("Pretending to fetch emails", {
+const messages = await getLatestMessages(5);
+console.log("Fetched latest emails", {
     runId,
-    emailsFetched: 0,
+    count: messages.value.length,
+    emails: messages.value.map((message) => ({
+        subject: message.subject,
+        from: message.sender?.emailAddress?.address,
+        receivedDateTime: message.receivedDateTime,
+        webLink: message.webLink,
+        bodyPreview: message.bodyPreview
+    })),
 });
 await setLastSuccessfulRunAt(new Date());
 console.log("Email status updater finished", {
