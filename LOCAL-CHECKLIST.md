@@ -23,7 +23,7 @@ Current state:
   - Page through results when more emails exist than the first page.
   - Only update `last_successful_run_at` after the run completes successfully.
 
-- [ ] Add processed-email dedupe.
+- [x] Add processed-email dedupe.
   - Store Microsoft Graph message IDs after processing.
   - Skip messages already processed in an earlier run or overlap window.
   - Keep enough metadata to debug what happened to each email.
