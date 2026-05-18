@@ -12,6 +12,12 @@ export default function config() {
   const microsoftTenantId = process.env.MICROSOFT_TENANT_ID ?? 'common';
   const microsoftGraphScopes = process.env.MICROSOFT_GRAPH_SCOPES ?? "User.Read Mail.Read offline_access"
 
+  const lastSuccessfulRunKey =
+    process.env.LAST_SUCCESSFUL_RUN_KEY ?? "last_successful_run_at";
+
+  const microsoftTokenCacheKey =
+    process.env.MICROSOFT_TOKEN_CACHE_KEY ?? "microsoft_msal_token_cache";
+
   if (!airtableToken) {
     throw new Error("Missing AIRTABLE_TOKEN");
   }
@@ -31,6 +37,8 @@ export default function config() {
     airtableBaseId,
     microsoftClientId,
     microsoftTenantId,
-    microsoftGraphScopes: microsoftGraphScopes.split(" ")
+    microsoftGraphScopes: microsoftGraphScopes.split(" "),
+    lastSuccessfulRunKey,
+    microsoftTokenCacheKey
   };
 }

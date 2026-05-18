@@ -8,16 +8,16 @@ Current state:
 - Airtable `App Settings` stores `last_successful_run_at`.
 - Microsoft Graph device-code login works locally.
 - App fetches recent messages locally and logs selected fields.
-- Graph token persistence for unattended Render runs is not done.
+- Graph token persistence for unattended Render runs is working locally and on Render.
 
 ## Checklist
 
-- [ ] Persist Microsoft auth for unattended cron runs.
+- [x] Persist Microsoft auth for unattended cron runs.
   - Store and reload the MSAL token cache outside the local process, probably in Airtable `App Settings`.
   - Render must refresh tokens without asking for device-code login every run.
   - Confirm manual Render run can fetch emails from Graph with no interactive prompt.
 
-- [ ] Replace latest-5 fetch with safe windowed email retrieval.
+- [x] Replace latest-5 fetch with safe windowed email retrieval.
   - Use `last_successful_run_at` minus a small overlap buffer.
   - Query Microsoft Graph by `receivedDateTime`.
   - Page through results when more emails exist than the first page.
@@ -67,6 +67,11 @@ Current state:
   - Ensure all required env vars exist in Render.
   - Decide whether Render dashboard or `render.yaml` is the source of truth.
   - Confirm scheduled run works after Graph token persistence is added.
+
+- [ ] Notify user when Microsoft re-login is required.
+  - Detect token-cache expiry, revoked consent, or silent-auth failure that cannot be recovered automatically.
+  - Send a clear notification explaining that manual Microsoft device-code login is required.
+  - Do not continue processing emails when Graph auth is invalid.
 
 - [ ] Add a final production smoke test.
   - Run locally against a small mailbox window.

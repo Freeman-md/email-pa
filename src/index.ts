@@ -1,5 +1,5 @@
 import config from "#/config";
-import { getLatestMessages } from "#/services/microsoft-graph/messages";
+import { getAllMessagesReceivedSince, getMessagesReceivedSince } from "#/services/microsoft-graph/messages";
 import {
   getLastSuccessfulRunAt,
   setLastSuccessfulRunAt,
@@ -12,20 +12,27 @@ const startedAt = new Date();
 const { lookbackHours } = config();
 const lastSuccessfulRunAt = await getLastSuccessfulRunAt();
 
+const overlapMinutes = 10;
+const defaultLookbackMs = Number(lookbackHours) * 60 * 60 * 1000;
+const windowStart = lastSuccessfulRunAt
+  ? new Date(new Date(lastSuccessfulRunAt).getTime() - overlapMinutes * 60 * 1000)
+  : new Date(startedAt.getTime() - defaultLookbackMs);
+
 
 console.log("Email status updater started", {
   runId,
   startedAt: startedAt.toISOString(),
   lookbackHours,
   lastSuccessfulRunAt,
+  windowStart: windowStart.toISOString(),
 });
 
-const messages = await getLatestMessages(5);
+const messages = await getAllMessagesReceivedSince(windowStart);
 
-console.log("Fetched latest emails", {
+console.log("Fetched windowed emails", {
   runId,
-  count: messages.value.length,
-  emails: messages.value.map((message: GraphMessage) => ({
+  count: messages.length,
+  emails: messages.map((message: GraphMessage) => ({
     subject: message.subject,
     from: message.sender?.emailAddress?.address,
     receivedDateTime: message.receivedDateTime,

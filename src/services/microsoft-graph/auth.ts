@@ -2,11 +2,9 @@ import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal
 import config from "#/config";
 import { getSetting, setSetting } from "#/repositories/app-settings";
 
-const MICROSOFT_TOKEN_CACHE_KEY = "microsoft_msal_token_cache";
-
 
 export async function getMicrosoftAccessToken() {
-    const { microsoftClientId, microsoftTenantId, microsoftGraphScopes } = config()
+    const { microsoftClientId, microsoftTenantId, microsoftGraphScopes, microsoftTokenCacheKey } = config()
 
     const msalConfig: Configuration = {
         auth: {
@@ -17,7 +15,7 @@ export async function getMicrosoftAccessToken() {
 
     const app = new PublicClientApplication(msalConfig)
     const tokenCache = app.getTokenCache();
-    const cachedTokenCache = await getSetting(MICROSOFT_TOKEN_CACHE_KEY)
+    const cachedTokenCache = await getSetting(microsoftTokenCacheKey)
 
     if (cachedTokenCache) {
         tokenCache.deserialize(cachedTokenCache)
@@ -33,7 +31,7 @@ export async function getMicrosoftAccessToken() {
                 scopes: microsoftGraphScopes
             })
 
-            await setSetting(MICROSOFT_TOKEN_CACHE_KEY, tokenCache.serialize())
+            await setSetting(microsoftTokenCacheKey, tokenCache.serialize())
 
             return silentResult.accessToken
         } catch (error) {
@@ -54,7 +52,7 @@ export async function getMicrosoftAccessToken() {
         throw new Error('Failed to get Microsoft Graph access token')
     }
 
-    await setSetting(MICROSOFT_TOKEN_CACHE_KEY, tokenCache.serialize());
+    await setSetting(microsoftTokenCacheKey, tokenCache.serialize());
 
     return result.accessToken
 }

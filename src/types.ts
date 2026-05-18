@@ -33,3 +33,8 @@ export type GraphMessage = {
     content?: string;
   };
 };
+
+export type GraphMessagesResponse = {
+    value: GraphMessage[];
+    "@odata.nextLink"?: string;
+};

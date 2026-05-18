@@ -1,12 +1,14 @@
+import config from "#/config.js";
 import { getSetting, setSetting } from "#/repositories/app-settings";
 
-const LAST_SUCCESSFUL_RUN_KEY =
-  "last_successful_run_at";
-
 export async function getLastSuccessfulRunAt() {
-  return getSetting(LAST_SUCCESSFUL_RUN_KEY);
+    const { lastSuccessfulRunKey } = config();
+
+  return getSetting(lastSuccessfulRunKey);
 }
 
 export async function setLastSuccessfulRunAt(date: Date) {
-  return setSetting(LAST_SUCCESSFUL_RUN_KEY, date.toISOString());
+  const { lastSuccessfulRunKey } = config();
+
+  return setSetting(lastSuccessfulRunKey, date.toISOString());
 }

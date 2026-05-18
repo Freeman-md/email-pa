@@ -5,7 +5,11 @@ const GRAPH_API_URL = "https://graph.microsoft.com/v1.0"
 export async function graphRequest(path: string) {
     const accessToken = await getMicrosoftAccessToken()
 
-    const response = await fetch(`${GRAPH_API_URL}${path}`, {
+    const url = path.startsWith("https://")
+        ? path
+        : `${GRAPH_API_URL}${path}`;
+
+    const response = await fetch(url, {
         headers: {
             Authorization: `Bearer ${accessToken}`
         }
