@@ -1,13 +1,22 @@
-export type AirtableRecord<T extends Record<string, unknown>> = {
-    id: string;
-    fields: T
-}
-
 export type AppSettings = {
   Key: string,
   Value?: string,
   "Updated At"?: string;
+}
 
+export type ProcessedEmail = {
+  "Message ID": string;
+  "Received At"?: string;
+  Subject?: string;
+  Sender?: string;
+  "Run ID": string;
+  "Processed At": string;
+};
+
+
+export type AirtableRecord<T extends Record<string, unknown>> = {
+    id: string;
+    fields: T
 }
 
 export type AirtableMultiRecordsResponse<T extends Record<string, unknown>> = {
