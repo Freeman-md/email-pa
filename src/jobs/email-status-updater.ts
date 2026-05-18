@@ -5,6 +5,7 @@ import {
   logRunFinished,
   logRunStarted,
 } from "#/logging";
+import { normalizeEmails } from "#/helpers/email-normalizer";
 import { getAllMessagesReceivedSince } from "#/services/microsoft-graph/messages";
 import {
   calculateRunWindow,
@@ -41,8 +42,9 @@ export async function runEmailStatusUpdater() {
   const { newMessages, skippedMessages } = await filterUnprocessedMessages(
     messages
   );
+  const normalizedEmails = normalizeEmails(newMessages);
 
-  logFetchedEmails(runId, newMessages);
+  logFetchedEmails(runId, normalizedEmails);
 
   logEmailDedupeCompleted({
     runId,

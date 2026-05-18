@@ -13,6 +13,15 @@ export type ProcessedEmail = {
   "Processed At": string;
 };
 
+export type NormalizedEmail = {
+  messageId: string;
+  subject: string;
+  senderName?: string;
+  senderAddress?: string;
+  receivedAt?: string;
+  webLink?: string;
+  bodyPreview: string;
+};
 
 export type AirtableRecord<T extends Record<string, unknown>> = {
     id: string;

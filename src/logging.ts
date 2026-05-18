@@ -1,4 +1,4 @@
-import { GraphMessage } from "#/types";
+import { NormalizedEmail } from "#/types";
 
 export function logRunStarted({
   runId,
@@ -22,16 +22,16 @@ export function logRunStarted({
   });
 }
 
-export function logFetchedEmails(runId: string, messages: GraphMessage[]) {
+export function logFetchedEmails(runId: string, emails: NormalizedEmail[]) {
   console.log("Fetched windowed emails", {
     runId,
-    count: messages.length,
-    emails: messages.map((message: GraphMessage) => ({
-      subject: message.subject,
-      from: message.sender?.emailAddress?.address,
-      receivedDateTime: message.receivedDateTime,
-      webLink: message.webLink,
-      bodyPreview: message.bodyPreview,
+    count: emails.length,
+    emails: emails.map((email) => ({
+      subject: email.subject,
+      from: email.senderAddress,
+      receivedAt: email.receivedAt,
+      webLink: email.webLink,
+      bodyPreview: email.bodyPreview,
     })),
   });
 }

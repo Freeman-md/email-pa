@@ -1,4 +1,4 @@
-import { escapeAirtableString } from "#/helpers.js";
+import { escapeAirtableString } from "#/helpers/airtable";
 import { createRecords, listRecords } from "#/services/airtable.js";
 import { AirtableRecord, ProcessedEmail } from "#/types.js";
 
