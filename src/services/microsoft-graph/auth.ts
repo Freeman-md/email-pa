@@ -1,6 +1,6 @@
 import { Configuration, PublicClientApplication } from "@azure/msal-node";
-import config from "../../config.js";
-import { getSetting, setSetting } from "../../repositories/app-settings.js";
+import config from "#/config";
+import { getSetting, setSetting } from "#/repositories/app-settings";
 
 const MICROSOFT_TOKEN_CACHE_KEY = "microsoft_msal_token_cache";
 

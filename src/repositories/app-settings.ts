@@ -1,5 +1,5 @@
-import { createRecords, listRecords, updateRecord } from "../services/airtable.js";
-import { AppSettings } from "../types.js";
+import { createRecords, listRecords, updateRecord } from "#/services/airtable";
+import { AppSettings } from "#/types";
 
 const APP_SETTINGS_TABLE = "App Settings";
 

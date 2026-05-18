@@ -1,4 +1,4 @@
-import config from "../config.js";
+import config from "#/config";
 export default async function airtableRequest(path, options = {}) {
     const { airtableApiUrl, airtableBaseId, airtableToken } = config();
     const response = await fetch(`${airtableApiUrl}/${airtableBaseId}${path}`, {

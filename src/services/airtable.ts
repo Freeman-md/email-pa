@@ -1,5 +1,5 @@
-import config from "../config.js";
-import { AirtableMultiRecordsResponse, AirtableSingleRecordResponse } from "../types.js";
+import config from "#/config";
+import { AirtableMultiRecordsResponse, AirtableSingleRecordResponse } from "#/types";
 
 export default async function airtableRequest(path: string, options: RequestInit = {}) {
     const { airtableApiUrl, airtableBaseId, airtableToken } = config()

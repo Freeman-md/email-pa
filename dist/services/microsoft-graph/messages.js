@@ -1,4 +1,4 @@
-import { graphRequest } from "./client.js";
+import { graphRequest } from "#/services/microsoft-graph/client";
 export async function getLatestMessages(limit = 5) {
     const select = [
         "id",

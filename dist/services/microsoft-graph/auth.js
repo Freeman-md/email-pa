@@ -1,5 +1,6 @@
 import { PublicClientApplication } from "@azure/msal-node";
-import config from "../../config.js";
+import config from "#/config";
+const MICROSOFT_TOKEN_CACHE_KEY = "microsoft_msal_token_cache";
 export async function getMicrosoftAccessToken() {
     const { microsoftClientId, microsoftTenantId, microsoftGraphScopes } = config();
     const msalConfig = {

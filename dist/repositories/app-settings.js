@@ -1,4 +1,4 @@
-import { createRecords, listRecords, updateRecord } from "../services/airtable.js";
+import { createRecords, listRecords, updateRecord } from "#/services/airtable";
 const APP_SETTINGS_TABLE = "App Settings";
 async function findSettingByKey(key) {
     const formula = encodeURIComponent(`{Key}='${key}'`);

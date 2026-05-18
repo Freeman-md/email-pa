@@ -1,6 +1,6 @@
-import config from "./config.js";
-import { getLatestMessages } from "./services/microsoft-graph/messages.js";
-import { getLastSuccessfulRunAt, setLastSuccessfulRunAt, } from "./services/run-state.js";
+import config from "#/config";
+import { getLatestMessages } from "#/services/microsoft-graph/messages";
+import { getLastSuccessfulRunAt, setLastSuccessfulRunAt, } from "#/services/run-state";
 const runId = crypto.randomUUID();
 const startedAt = new Date();
 const { lookbackHours } = config();

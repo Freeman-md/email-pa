@@ -1,10 +1,10 @@
-import config from "./config.js";
-import { getLatestMessages } from "./services/microsoft-graph/messages.js";
+import config from "#/config";
+import { getLatestMessages } from "#/services/microsoft-graph/messages";
 import {
   getLastSuccessfulRunAt,
   setLastSuccessfulRunAt,
-} from "./services/run-state.js";
-import { GraphMessage } from "./types.js";
+} from "#/services/run-state";
+import { GraphMessage } from "#/types";
 
 const runId = crypto.randomUUID();
 const startedAt = new Date();

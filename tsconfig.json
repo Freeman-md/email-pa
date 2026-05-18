@@ -2,10 +2,13 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
+    "paths": {
+      "#/*": ["./src/*"]
+    },
     "types": ["node"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2022",
-    "strict": true
-  }
+    "strict": true,
+  },
 }

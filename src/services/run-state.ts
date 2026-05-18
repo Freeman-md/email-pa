@@ -1,4 +1,4 @@
-import { getSetting, setSetting } from "../repositories/app-settings.js";
+import { getSetting, setSetting } from "#/repositories/app-settings";
 
 const LAST_SUCCESSFUL_RUN_KEY =
   "last_successful_run_at";
