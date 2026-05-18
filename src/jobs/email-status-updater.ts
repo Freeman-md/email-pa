@@ -1,5 +1,6 @@
 import config from "#/config";
 import {
+  logEmailDedupeCompleted,
   logFetchedEmails,
   logRunFinished,
   logRunStarted,
@@ -43,7 +44,7 @@ export async function runEmailStatusUpdater() {
 
   logFetchedEmails(runId, newMessages);
 
-  console.log("Email dedupe completed", {
+  logEmailDedupeCompleted({
     runId,
     fetchedCount: messages.length,
     newCount: newMessages.length,

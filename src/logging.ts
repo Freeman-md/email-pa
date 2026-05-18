@@ -36,6 +36,25 @@ export function logFetchedEmails(runId: string, messages: GraphMessage[]) {
   });
 }
 
+export function logEmailDedupeCompleted({
+  runId,
+  fetchedCount,
+  newCount,
+  skippedCount,
+}: {
+  runId: string;
+  fetchedCount: number;
+  newCount: number;
+  skippedCount: number;
+}) {
+  console.log("Email dedupe completed", {
+    runId,
+    fetchedCount,
+    newCount,
+    skippedCount,
+  });
+}
+
 export function logRunFinished(runId: string) {
   console.log("Email status updater finished", {
     runId,
