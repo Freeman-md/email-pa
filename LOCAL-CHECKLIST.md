@@ -28,7 +28,7 @@ Current state:
   - Skip messages already processed in an earlier run or overlap window.
   - Keep enough metadata to debug what happened to each email.
 
-- [ ] Normalize email content for analysis.
+- [x] Normalize email content for analysis.
   - Convert Graph message fields into one internal email object.
   - Keep sender, subject, received time, body/body preview, web link, and message ID.
   - Strip or limit noisy HTML before sending content into classification.
