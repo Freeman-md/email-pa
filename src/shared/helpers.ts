@@ -7,5 +7,5 @@ export function limitText(value: string, maxLength: number) {
 }
 
 export function escapeAirtableString(value: string) {
-    return value.replace(/'/g, "\\'")
+  return value.replace(/'/g, "\\'");
 }

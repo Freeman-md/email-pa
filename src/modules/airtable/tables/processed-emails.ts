@@ -1,6 +1,15 @@
-import { escapeAirtableString } from "@/helpers/text";
-import { createRecords, listRecords } from "@/services/airtable";
-import { AirtableRecord, ProcessedEmail } from "@/types";
+import { escapeAirtableString } from "@/shared/helpers";
+import { createRecords, listRecords } from "@/modules/airtable/client";
+import { AirtableRecord } from "@/shared/types/airtable";
+
+export type ProcessedEmail = {
+  "Message ID": string;
+  "Received At"?: string;
+  Subject?: string;
+  Sender?: string;
+  "Run ID": string;
+  "Processed At": string;
+};
 
 const PROCESSED_EMAILS_TABLE = "Processed Emails"
 

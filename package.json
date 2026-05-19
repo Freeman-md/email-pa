@@ -13,6 +13,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/json-schema": "^7.0.15",
     "@types/node": "^25.7.0",
     "tsc-alias": "^1.8.17",
     "tsx": "^4.21.0",
@@ -24,6 +25,8 @@
   },
   "dependencies": {
     "@azure/msal-node": "^5.2.1",
-    "dotenv": "^17.4.2"
+    "ai": "^6.0.185",
+    "dotenv": "^17.4.2",
+    "zod": "^4.4.3"
   }
 }

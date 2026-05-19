@@ -18,6 +18,8 @@ export default function config() {
   const microsoftTokenCacheKey =
     process.env.MICROSOFT_TOKEN_CACHE_KEY ?? "microsoft_msal_token_cache";
 
+  const aiModel = process.env.AI_MODEL ?? "openai/gpt-5.4";
+
   if (!airtableToken) {
     throw new Error("Missing AIRTABLE_TOKEN");
   }
@@ -39,6 +41,7 @@ export default function config() {
     microsoftTenantId,
     microsoftGraphScopes: microsoftGraphScopes.split(" "),
     lastSuccessfulRunKey,
-    microsoftTokenCacheKey
+    microsoftTokenCacheKey,
+    aiModel
   };
 }

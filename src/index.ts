@@ -1,7 +1,7 @@
-import { runEmailStatusUpdater } from "@/jobs/email-status-updater";
+import { runEmailProcessing } from "@/modules/email-processing/main";
 
 try {
-  await runEmailStatusUpdater();
+  await runEmailProcessing();
 } catch (error) {
   console.error("Email status updater failed", {
     error: error instanceof Error ? error.message : String(error),

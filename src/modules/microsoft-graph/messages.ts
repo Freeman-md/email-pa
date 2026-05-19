@@ -1,5 +1,5 @@
-import { graphRequest } from "@/services/microsoft-graph/client"
-import { GraphMessage, GraphMessagesResponse } from "@/types"
+import { graphRequest } from "@/modules/microsoft-graph/client";
+import { GraphMessage, GraphMessagesResponse } from "@/shared/types/email";
 
 const MESSAGE_SELECT_FIELDS = [
     "id",

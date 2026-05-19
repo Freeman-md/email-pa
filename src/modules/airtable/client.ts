@@ -1,5 +1,8 @@
-import config from "@/config";
-import { AirtableMultiRecordsResponse, AirtableSingleRecordResponse } from "@/types";
+import config from "@/config/env";
+import {
+  AirtableMultiRecordsResponse,
+  AirtableSingleRecordResponse,
+} from "@/shared/types/airtable";
 
 export default async function airtableRequest(path: string, options: RequestInit = {}) {
     const { airtableApiUrl, airtableBaseId, airtableToken } = config()

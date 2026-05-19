@@ -1,22 +1,25 @@
-import config from "@/config";
+import config from "@/config/env";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
   logRunFinished,
   logRunStarted,
-} from "@/logging";
-import { normalizeEmails } from "@/helpers/email-normalizer";
-import { getAllMessagesReceivedSince } from "@/services/microsoft-graph/messages";
+} from "@/modules/email-processing/logging";
+import { getAllMessagesReceivedSince } from "@/modules/microsoft-graph/messages";
+import {
+  filterUnprocessedMessages,
+  markMessagesAsProcessed,
+} from "@/modules/email-processing/dedupe";
 import {
   calculateRunWindow,
   getLastSuccessfulRunAt,
+  normalizeEmails,
   setLastSuccessfulRunAt,
-} from "@/run-state";
-import { filterUnprocessedMessages, markMessagesAsProcessed } from "@/services/email-dedupe";
+} from "@/modules/email-processing/utils";
 
 const OVERLAP_MINUTES = 10;
 
-export async function runEmailStatusUpdater() {
+export async function runEmailProcessing() {
   const runId = crypto.randomUUID();
   const startedAt = new Date();
 
@@ -38,14 +41,12 @@ export async function runEmailStatusUpdater() {
   });
 
   const messages = await getAllMessagesReceivedSince(windowStart);
-
   const { newMessages, skippedMessages } = await filterUnprocessedMessages(
     messages
   );
   const normalizedEmails = normalizeEmails(newMessages);
 
   logFetchedEmails(runId, normalizedEmails);
-
   logEmailDedupeCompleted({
     runId,
     fetchedCount: messages.length,
@@ -54,7 +55,6 @@ export async function runEmailStatusUpdater() {
   });
 
   await markMessagesAsProcessed(newMessages, runId);
-
   await setLastSuccessfulRunAt(new Date());
 
   logRunFinished(runId);

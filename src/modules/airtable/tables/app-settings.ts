@@ -1,5 +1,10 @@
-import { createRecords, listRecords, updateRecord } from "@/services/airtable";
-import { AppSettings } from "@/types";
+import { createRecords, listRecords, updateRecord } from "@/modules/airtable/client";
+
+export type AppSettings = {
+  Key: string;
+  Value?: string;
+  "Updated At"?: string;
+};
 
 const APP_SETTINGS_TABLE = "App Settings";
 
