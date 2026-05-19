@@ -1,5 +1,5 @@
-import { limitText, normalizeWhitespace } from "#/helpers/text";
-import { GraphMessage, NormalizedEmail } from "#/types";
+import { limitText, normalizeWhitespace } from "@/helpers/text";
+import { GraphMessage, NormalizedEmail } from "@/types";
 
 const MAX_BODY_PREVIEW_LENGTH = 1000;
 

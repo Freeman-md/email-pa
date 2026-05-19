@@ -1,5 +1,5 @@
-import config from "#/config";
-import { getSetting, setSetting } from "#/repositories/app-settings";
+import config from "@/config";
+import { getSetting, setSetting } from "@/repositories/app-settings";
 
 export async function getLastSuccessfulRunAt() {
   const { lastSuccessfulRunKey } = config();

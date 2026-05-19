@@ -1,5 +1,5 @@
-import { graphRequest } from "#/services/microsoft-graph/client"
-import { GraphMessage, GraphMessagesResponse } from "#/types.js"
+import { graphRequest } from "@/services/microsoft-graph/client"
+import { GraphMessage, GraphMessagesResponse } from "@/types"
 
 const MESSAGE_SELECT_FIELDS = [
     "id",

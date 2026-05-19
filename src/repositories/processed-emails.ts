@@ -1,6 +1,6 @@
-import { escapeAirtableString } from "#/helpers/airtable";
-import { createRecords, listRecords } from "#/services/airtable.js";
-import { AirtableRecord, ProcessedEmail } from "#/types.js";
+import { escapeAirtableString } from "@/helpers/text";
+import { createRecords, listRecords } from "@/services/airtable";
+import { AirtableRecord, ProcessedEmail } from "@/types";
 
 const PROCESSED_EMAILS_TABLE = "Processed Emails"
 

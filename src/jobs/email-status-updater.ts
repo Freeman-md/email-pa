@@ -1,18 +1,18 @@
-import config from "#/config";
+import config from "@/config";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
   logRunFinished,
   logRunStarted,
-} from "#/logging";
-import { normalizeEmails } from "#/helpers/email-normalizer";
-import { getAllMessagesReceivedSince } from "#/services/microsoft-graph/messages";
+} from "@/logging";
+import { normalizeEmails } from "@/helpers/email-normalizer";
+import { getAllMessagesReceivedSince } from "@/services/microsoft-graph/messages";
 import {
   calculateRunWindow,
   getLastSuccessfulRunAt,
   setLastSuccessfulRunAt,
-} from "#/run-state";
-import { filterUnprocessedMessages, markMessagesAsProcessed } from "#/services/email-dedupe.js";
+} from "@/run-state";
+import { filterUnprocessedMessages, markMessagesAsProcessed } from "@/services/email-dedupe";
 
 const OVERLAP_MINUTES = 10;
 

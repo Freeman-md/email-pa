@@ -1,6 +1,6 @@
 import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal-node";
-import config from "#/config";
-import { getSetting, setSetting } from "#/repositories/app-settings";
+import config from "@/config";
+import { getSetting, setSetting } from "@/repositories/app-settings";
 
 
 export async function getMicrosoftAccessToken() {

@@ -1,4 +1,4 @@
-import { runEmailStatusUpdater } from "#/jobs/email-status-updater";
+import { runEmailStatusUpdater } from "@/jobs/email-status-updater";
 
 try {
   await runEmailStatusUpdater();

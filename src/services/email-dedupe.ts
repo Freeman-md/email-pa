@@ -2,8 +2,8 @@ import {
   createProcessedEmail,
   getProcessedEmailsByMessageIds,
   getUniqueProcessedMessageIds,
-} from "#/repositories/processed-emails.js";
-import type { GraphMessage, ProcessedEmail } from "#/types.js";
+} from "@/repositories/processed-emails";
+import type { GraphMessage, ProcessedEmail } from "@/types";
 
 export type EmailDedupeResult = {
   newMessages: GraphMessage[];
