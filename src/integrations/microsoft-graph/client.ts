@@ -1,4 +1,4 @@
-import { getMicrosoftAccessToken } from "@/modules/microsoft-graph/auth";
+import { getMicrosoftAccessToken } from "@/integrations/microsoft-graph/auth";
 
 const GRAPH_API_URL = "https://graph.microsoft.com/v1.0"
 

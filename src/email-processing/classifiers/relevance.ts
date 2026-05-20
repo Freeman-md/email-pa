@@ -1,8 +1,11 @@
-import { ClassifiedEmailRelevance, EmailRelevanceClassification, NormalizedEmail } from "@/shared/types/email"
+import {
+  ClassifiedEmailRelevance,
+  EmailRelevanceClassification,
+  NormalizedEmail,
+} from "@/email-processing/types";
 import { z } from "zod"
-import { getAiConfig } from "./config";
+import { getAiConfig } from "@/integrations/ai/config";
 import { generateText, Output } from "ai";
-import { chunkArray } from "@/shared/utils";
 
 const relevanceSchema = z.object({
     isRelevant: z.boolean(),

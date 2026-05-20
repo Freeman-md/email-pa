@@ -1,6 +1,6 @@
 import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal-node";
-import config from "@/env";
-import { getSetting, setSetting } from "@/modules/airtable/tables/app-settings";
+import config from "@/app/env";
+import { getSetting, setSetting } from "@/integrations/airtable/tables/app-settings";
 
 
 export async function getMicrosoftAccessToken() {

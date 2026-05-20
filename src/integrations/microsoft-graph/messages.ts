@@ -1,5 +1,8 @@
-import { graphRequest } from "@/modules/microsoft-graph/client";
-import { GraphMessage, GraphMessagesResponse } from "@/shared/types/email";
+import { graphRequest } from "@/integrations/microsoft-graph/client";
+import {
+  GraphMessage,
+  GraphMessagesResponse,
+} from "@/integrations/microsoft-graph/types";
 
 const MESSAGE_SELECT_FIELDS = [
     "id",

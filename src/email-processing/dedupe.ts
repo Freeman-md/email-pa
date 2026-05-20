@@ -2,17 +2,15 @@ import {
   createProcessedEmail,
   getProcessedEmailsByMessageIds,
   getUniqueProcessedMessageIds,
-} from "@/modules/airtable/tables/processed-emails";
-import type { GraphMessage, ProcessedEmail } from "@/shared/types/email";
+} from "@/integrations/airtable/tables/processed-emails";
+import { createProcessedEmailFields } from "@/email-processing/state";
+import type { ProcessedEmail } from "@/email-processing/types";
+import type { GraphMessage } from "@/integrations/microsoft-graph/types";
 
 export type EmailDedupeResult = {
   newMessages: GraphMessage[];
   skippedMessages: GraphMessage[];
 };
-
-function getSenderAddress(message: GraphMessage) {
-  return message.sender?.emailAddress?.address ?? "";
-}
 
 export async function filterUnprocessedMessages(
   messages: GraphMessage[]
@@ -46,14 +44,11 @@ export async function markMessagesAsProcessed(
   const processedAt = new Date().toISOString();
 
   for (const message of messages) {
-    const fields: ProcessedEmail = {
-      "Message ID": message.id,
-      "Received At": message.receivedDateTime,
-      Subject: message.subject,
-      Sender: getSenderAddress(message),
-      "Run ID": runId,
-      "Processed At": processedAt,
-    };
+    const fields: ProcessedEmail = createProcessedEmailFields({
+      message,
+      runId,
+      processedAt,
+    });
 
     await createProcessedEmail(fields);
   }

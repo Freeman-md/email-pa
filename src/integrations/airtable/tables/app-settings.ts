@@ -1,4 +1,4 @@
-import { createRecords, listRecords, updateRecord } from "@/modules/airtable/client";
+import { createRecords, listRecords, updateRecord } from "@/integrations/airtable/client";
 
 export type AppSettings = {
   Key: string;

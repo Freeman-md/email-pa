@@ -1,7 +1,7 @@
 import { escapeAirtableString } from "@/shared/utils";
-import { createRecords, listRecords, updateRecord } from "@/modules/airtable/client";
-import { AirtableRecord } from "@/shared/types/airtable";
-import { ProcessedEmail } from "@/shared/types/email";
+import { createRecords, listRecords, updateRecord } from "@/integrations/airtable/client";
+import { ProcessedEmail } from "@/email-processing/types";
+import { AirtableRecord } from "@/integrations/airtable/types";
 
 const PROCESSED_EMAILS_TABLE = "Processed Emails"
 

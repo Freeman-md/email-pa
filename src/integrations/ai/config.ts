@@ -1,4 +1,4 @@
-import config from "@/env"
+import config from "@/app/env"
 
 
 export function getAiConfig() {

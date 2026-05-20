@@ -1,23 +1,20 @@
-import config from "@/env";
+import config from "@/app/env";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
   logRelevanceClassificationCompleted,
   logRunFinished,
   logRunStarted,
-} from "@/modules/email-processing/logging";
-import { getAllMessagesReceivedSince } from "@/modules/microsoft-graph/messages";
+} from "@/email-processing/logging";
+import { getAllMessagesReceivedSince } from "@/integrations/microsoft-graph/messages";
 import {
   filterUnprocessedMessages,
   markMessagesAsProcessed,
-} from "@/modules/email-processing/dedupe";
-import {
-  calculateRunWindow,
-  getLastSuccessfulRunAt,
-  normalizeEmails,
-  setLastSuccessfulRunAt,
-} from "@/modules/email-processing/utils";
-import { classifyEmailRelevanceStage } from "@/modules/email-processing/relevance";
+} from "@/email-processing/dedupe";
+import { normalizeEmails } from "@/email-processing/normalization";
+import { getLastSuccessfulRunAt, setLastSuccessfulRunAt } from "@/email-processing/run-state";
+import { calculateRunWindow } from "@/email-processing/run-window";
+import { classifyEmailRelevanceStage } from "@/email-processing/stages/relevance";
 
 const OVERLAP_MINUTES = 1000;
 

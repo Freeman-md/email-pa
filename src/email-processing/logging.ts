@@ -1,4 +1,4 @@
-import { NormalizedEmail } from "@/shared/types/email";
+import { NormalizedEmail } from "@/email-processing/types";
 
 export function logRunStarted({
   runId,
