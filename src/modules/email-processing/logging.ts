@@ -55,6 +55,25 @@ export function logEmailDedupeCompleted({
   });
 }
 
+export function logRelevanceClassificationCompleted({
+  runId,
+  reviewedCount,
+  relevantCount,
+  irrelevantCount,
+}: {
+  runId: string;
+  reviewedCount: number;
+  relevantCount: number;
+  irrelevantCount: number;
+}) {
+  console.log("Email relevance classification completed", {
+    runId,
+    reviewedCount,
+    relevantCount,
+    irrelevantCount,
+  });
+}
+
 export function logRunFinished(runId: string) {
   console.log("Email status updater finished", {
     runId,

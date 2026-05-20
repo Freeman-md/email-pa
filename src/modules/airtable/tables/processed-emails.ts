@@ -1,20 +1,12 @@
-import { escapeAirtableString } from "@/shared/helpers";
-import { createRecords, listRecords } from "@/modules/airtable/client";
+import { escapeAirtableString } from "@/shared/utils";
+import { createRecords, listRecords, updateRecord } from "@/modules/airtable/client";
 import { AirtableRecord } from "@/shared/types/airtable";
-
-export type ProcessedEmail = {
-  "Message ID": string;
-  "Received At"?: string;
-  Subject?: string;
-  Sender?: string;
-  "Run ID": string;
-  "Processed At": string;
-};
+import { ProcessedEmail } from "@/shared/types/email";
 
 const PROCESSED_EMAILS_TABLE = "Processed Emails"
 
 async function findProcessedEmailByMessageId(messageId: string) {
-    const formula = encodeURIComponent(
+  const formula = encodeURIComponent(
     `{Message ID}='${escapeAirtableString(messageId)}'`
   );
 
@@ -37,6 +29,13 @@ export async function getProcessedEmail(messageId: string) {
 
 export async function createProcessedEmail(fields: ProcessedEmail) {
   return createRecords<ProcessedEmail>(PROCESSED_EMAILS_TABLE, fields);
+}
+
+export async function updateProcessedEmail(
+  recordId: string,
+  fields: Partial<ProcessedEmail>
+) {
+  return updateRecord<ProcessedEmail>(PROCESSED_EMAILS_TABLE, recordId, fields);
 }
 
 export async function getProcessedEmailsByMessageIds(messageIds: string[]) {

@@ -1,5 +1,5 @@
 import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal-node";
-import config from "@/config/env";
+import config from "@/env";
 import { getSetting, setSetting } from "@/modules/airtable/tables/app-settings";
 
 

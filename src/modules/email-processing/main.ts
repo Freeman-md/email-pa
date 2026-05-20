@@ -1,7 +1,8 @@
-import config from "@/config/env";
+import config from "@/env";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
+  logRelevanceClassificationCompleted,
   logRunFinished,
   logRunStarted,
 } from "@/modules/email-processing/logging";
@@ -16,8 +17,9 @@ import {
   normalizeEmails,
   setLastSuccessfulRunAt,
 } from "@/modules/email-processing/utils";
+import { classifyEmailRelevanceStage } from "@/modules/email-processing/relevance";
 
-const OVERLAP_MINUTES = 10;
+const OVERLAP_MINUTES = 1000;
 
 export async function runEmailProcessing() {
   const runId = crypto.randomUUID();
@@ -55,6 +57,18 @@ export async function runEmailProcessing() {
   });
 
   await markMessagesAsProcessed(newMessages, runId);
+
+  const relevanceResult = await classifyEmailRelevanceStage({
+    emails: normalizedEmails,
+  });
+
+  logRelevanceClassificationCompleted({
+    runId,
+    reviewedCount: relevanceResult.reviewedCount,
+    relevantCount: relevanceResult.relevantCount,
+    irrelevantCount: relevanceResult.irrelevantCount,
+  });
+
   await setLastSuccessfulRunAt(new Date());
 
   logRunFinished(runId);

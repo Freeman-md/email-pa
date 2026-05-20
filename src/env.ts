@@ -18,7 +18,19 @@ export default function config() {
   const microsoftTokenCacheKey =
     process.env.MICROSOFT_TOKEN_CACHE_KEY ?? "microsoft_msal_token_cache";
 
-  const aiModel = process.env.AI_MODEL ?? "openai/gpt-5.4";
+  const aiModel = process.env.AI_MODEL ?? "openai/gpt-5.4-mini";
+  const aiClassificationModel = process.env.AI_CLASSIFICATION_MODEL ?? "openai/gpt-5.4-mini";
+  const aiClassificationConcurrency = Number(process.env.AI_CLASSIFICATION_CONCURRENCY ?? "2");
+  const aiClassificationMaxOutputTokens = Number(
+    process.env.AI_CLASSIFICATION_MAX_OUTPUT_TOKENS ?? "300"
+  );
+  const aiRetryMaxRetries = Number(
+  process.env.AI_RETRY_MAX_RETRIES ?? "4"
+);
+
+const aiRetryBaseDelayMs = Number(
+  process.env.AI_RETRY_BASE_DELAY_MS ?? "1500"
+);
 
   if (!airtableToken) {
     throw new Error("Missing AIRTABLE_TOKEN");
@@ -42,6 +54,11 @@ export default function config() {
     microsoftGraphScopes: microsoftGraphScopes.split(" "),
     lastSuccessfulRunKey,
     microsoftTokenCacheKey,
-    aiModel
+    aiModel,
+    aiClassificationModel,
+    aiClassificationConcurrency,
+    aiClassificationMaxOutputTokens,
+    aiRetryMaxRetries,
+aiRetryBaseDelayMs,
   };
 }

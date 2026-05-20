@@ -3,8 +3,7 @@ import {
   getProcessedEmailsByMessageIds,
   getUniqueProcessedMessageIds,
 } from "@/modules/airtable/tables/processed-emails";
-import type { GraphMessage } from "@/shared/types/email";
-import type { ProcessedEmail } from "@/modules/airtable/tables/processed-emails";
+import type { GraphMessage, ProcessedEmail } from "@/shared/types/email";
 
 export type EmailDedupeResult = {
   newMessages: GraphMessage[];

@@ -1,7 +1,7 @@
-import config from "@/config/env";
+import config from "@/env";
 import {
-  AirtableMultiRecordsResponse,
-  AirtableSingleRecordResponse,
+    AirtableMultiRecordsResponse,
+    AirtableSingleRecordResponse,
 } from "@/shared/types/airtable";
 
 export default async function airtableRequest(path: string, options: RequestInit = {}) {
@@ -26,7 +26,7 @@ export default async function airtableRequest(path: string, options: RequestInit
 }
 
 export async function listRecords<T extends Record<string, unknown>>(tableName: string, query = "")
-: Promise<AirtableMultiRecordsResponse<T>> {
+    : Promise<AirtableMultiRecordsResponse<T>> {
     return airtableRequest(`/${encodeURIComponent(tableName)}${query}`)
 }
 
@@ -44,7 +44,7 @@ export async function createRecords<T extends Record<string, unknown>>(
     return airtableRequest(`/${encodeURIComponent(tableName)}`, {
         method: "POST",
         body: JSON.stringify({
-            records: [{fields}]
+            records: [{ fields }]
         })
     })
 }

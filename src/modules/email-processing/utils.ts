@@ -1,6 +1,6 @@
-import config from "@/config/env";
+import config from "@/env";
 import { getSetting, setSetting } from "@/modules/airtable/tables/app-settings";
-import { limitText, normalizeWhitespace } from "@/shared/helpers";
+import { limitText, normalizeWhitespace } from "@/shared/utils";
 import { GraphMessage, NormalizedEmail } from "@/shared/types/email";
 
 const MAX_BODY_PREVIEW_LENGTH = 1000;
@@ -30,8 +30,8 @@ export function calculateRunWindow({
 
   return lastSuccessfulRunAt
     ? new Date(
-        new Date(lastSuccessfulRunAt).getTime() - overlapMinutes * 60 * 1000
-      )
+      new Date(lastSuccessfulRunAt).getTime() - overlapMinutes * 60 * 1000
+    )
     : new Date(startedAt.getTime() - defaultLookbackMs);
 }
 
