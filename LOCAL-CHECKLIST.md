@@ -33,7 +33,7 @@ Current state:
   - Keep sender, subject, received time, body/body preview, web link, and message ID.
   - Strip or limit noisy HTML before sending content into classification.
 
-- [ ] Implement relevance classification.
+- [x] Implement relevance classification.
   - Decide whether an email is related to job applications.
   - Return a structured result with `isRelevant`, evidence, and confidence.
   - Skip irrelevant emails but still log that they were reviewed.
