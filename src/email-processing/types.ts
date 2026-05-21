@@ -9,6 +9,9 @@ export type ProcessedEmail = {
   Relevance?: string;
   "Relevance Confidence"?: string;
   "Relevance Evidence"?: string;
+  Status?: string;
+  "Status Confidence"?: string;
+  "Status Evidence"?: string;
   "Error Message"?: string;
 };
 
@@ -20,6 +23,7 @@ export type NormalizedEmail = {
   receivedAt?: string;
   webLink?: string;
   bodyPreview: string;
+  body?: string;
 };
 
 export type EmailRelevanceClassification = {
@@ -28,7 +32,22 @@ export type EmailRelevanceClassification = {
   evidence: string[];
 };
 
+export type EmailStatusClassification = {
+  status:
+    | "rejection"
+    | "interview_invitation"
+    | "assessment"
+    | "generic_update";
+  confidence: "high" | "medium" | "low";
+  evidence: string[];
+};
+
 export type ClassifiedEmailRelevance = {
   email: NormalizedEmail;
   relevance: EmailRelevanceClassification;
+};
+
+export type ClassifiedEmailStatus = {
+  email: NormalizedEmail;
+  status: EmailStatusClassification;
 };

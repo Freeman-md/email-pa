@@ -74,6 +74,31 @@ export function logRelevanceClassificationCompleted({
   });
 }
 
+export function logStatusClassificationCompleted({
+  runId,
+  reviewedCount,
+  rejectionCount,
+  interviewInvitationCount,
+  assessmentCount,
+  genericUpdateCount,
+}: {
+  runId: string;
+  reviewedCount: number;
+  rejectionCount: number;
+  interviewInvitationCount: number;
+  assessmentCount: number;
+  genericUpdateCount: number;
+}) {
+  console.log("Email status classification completed", {
+    runId,
+    reviewedCount,
+    rejectionCount,
+    interviewInvitationCount,
+    assessmentCount,
+    genericUpdateCount,
+  });
+}
+
 export function logRunFinished(runId: string) {
   console.log("Email status updater finished", {
     runId,

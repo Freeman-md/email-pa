@@ -3,6 +3,7 @@ import {
   logEmailDedupeCompleted,
   logFetchedEmails,
   logRelevanceClassificationCompleted,
+  logStatusClassificationCompleted,
   logRunFinished,
   logRunStarted,
 } from "@/email-processing/logging";
@@ -11,7 +12,10 @@ import {
   filterUnprocessedMessages,
   markMessagesAsProcessed,
 } from "@/email-processing/dedupe";
-import { classifyEmailRelevanceStage } from "@/email-processing/processing";
+import {
+  classifyEmailRelevanceStage,
+  classifyEmailStatusStage,
+} from "@/email-processing/processing";
 import { initializeRun, setLastSuccessfulRunAt } from "./state";
 import { normalizeEmails } from "./mappers";
 
@@ -58,6 +62,19 @@ export async function runEmailProcessing() {
     reviewedCount: relevanceResult.reviewedCount,
     relevantCount: relevanceResult.relevantCount,
     irrelevantCount: relevanceResult.irrelevantCount,
+  });
+
+  const statusResult = await classifyEmailStatusStage({
+    emails: relevanceResult.relevantEmails,
+  });
+
+  logStatusClassificationCompleted({
+    runId,
+    reviewedCount: statusResult.reviewedCount,
+    rejectionCount: statusResult.rejectionCount,
+    interviewInvitationCount: statusResult.interviewInvitationCount,
+    assessmentCount: statusResult.assessmentCount,
+    genericUpdateCount: statusResult.genericUpdateCount,
   });
 
   await setLastSuccessfulRunAt(new Date());

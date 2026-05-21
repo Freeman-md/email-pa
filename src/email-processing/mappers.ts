@@ -1,6 +1,7 @@
 import { GraphMessage } from "@/integrations/microsoft-graph/types";
 import {
     EmailRelevanceClassification,
+    EmailStatusClassification,
     ProcessedEmail,
 } from "@/email-processing/types";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
@@ -41,6 +42,18 @@ export function createRelevanceUpdateFields(
         Relevance: isRelevant ? "relevant" : "irrelevant",
         "Relevance Confidence": classification.confidence,
         "Relevance Evidence": classification.evidence.join(" | "),
+        "Error Message": "",
+    };
+}
+
+export function createStatusUpdateFields(
+    classification: EmailStatusClassification
+): Partial<ProcessedEmail> {
+    return {
+        "Processing Status": classification.status,
+        Status: classification.status,
+        "Status Confidence": classification.confidence,
+        "Status Evidence": classification.evidence.join(" | "),
         "Error Message": "",
     };
 }

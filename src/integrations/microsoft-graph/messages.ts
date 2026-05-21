@@ -10,7 +10,12 @@ const MESSAGE_SELECT_FIELDS = [
     "receivedDateTime",
     "webLink",
     "bodyPreview",
-].join(",")
+]
+
+const FULL_MESSAGE_SELECT_FIELDS = [
+    ...MESSAGE_SELECT_FIELDS,
+    "body",
+]
 
 export async function fetchMessages(
     receivedSince: Date,
@@ -20,7 +25,7 @@ export async function fetchMessages(
 
     const params = new URLSearchParams({
         "$top": String(pageSize),
-        "$select": MESSAGE_SELECT_FIELDS,
+        "$select": MESSAGE_SELECT_FIELDS.join(','),
         "$orderby": "receivedDateTime desc",
         "$filter": `receivedDateTime ge ${receivedSince.toISOString()}`
     })
@@ -37,4 +42,16 @@ export async function fetchMessages(
     }
 
     return messages
+}
+
+export async function fetchMessageWithBody(
+    messageId: string
+): Promise<GraphMessage> {
+    const params = new URLSearchParams({
+        "$select": FULL_MESSAGE_SELECT_FIELDS.join(','),
+    })
+
+    return graphRequest(
+        `/me/messages/${encodeURIComponent(messageId)}?${params.toString()}`
+    )
 }

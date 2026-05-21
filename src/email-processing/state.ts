@@ -1,7 +1,7 @@
 import config from "@/env";
 import { getSetting, setSetting } from "../integrations/airtable/app-settings.repository";
 
-const OVERLAP_MINUTES = 1000;
+const OVERLAP_MINUTES = 10;
 
 export async function setLastSuccessfulRunAt(date: Date) {
     const { lastSuccessfulRunKey } = config();
