@@ -12,23 +12,17 @@ import {
   markMessagesAsProcessed,
 } from "@/email-processing/dedupe";
 import { classifyEmailRelevanceStage } from "@/email-processing/processing";
-import { calculateRunWindow, getLastSuccessfulRunAt, setLastSuccessfulRunAt } from "./state";
+import { initializeRun, setLastSuccessfulRunAt } from "./state";
 import { normalizeEmails } from "./mappers";
 
-const OVERLAP_MINUTES = 1000;
-
 export async function runEmailProcessing() {
-  const runId = crypto.randomUUID();
-  const startedAt = new Date();
-
-  const { lookbackHours } = config();
-  const lastSuccessfulRunAt = await getLastSuccessfulRunAt();
-  const windowStart = calculateRunWindow({
+  const {
+    runId,
     startedAt,
-    lastSuccessfulRunAt,
     lookbackHours,
-    overlapMinutes: OVERLAP_MINUTES,
-  });
+    lastSuccessfulRunAt,
+    windowStart,
+  } = await initializeRun()
 
   logRunStarted({
     runId,

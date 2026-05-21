@@ -1,4 +1,4 @@
-import { runEmailProcessing } from "@/email-processing/workflow";
+import { runEmailProcessing } from "@/email-processing/run";
 
 try {
   await runEmailProcessing();
