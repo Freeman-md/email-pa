@@ -2,10 +2,10 @@ import {
   createProcessedEmail,
   getProcessedEmailsByMessageIds,
   getUniqueProcessedMessageIds,
-} from "@/integrations/airtable/tables/processed-emails";
-import { createProcessedEmailFields } from "@/email-processing/state";
+} from "@/integrations/airtable/processed-emails.repository";
 import type { ProcessedEmail } from "@/email-processing/types";
 import type { GraphMessage } from "@/integrations/microsoft-graph/types";
+import { createProcessedEmailFields } from "./mappers";
 
 export type EmailDedupeResult = {
   newMessages: GraphMessage[];

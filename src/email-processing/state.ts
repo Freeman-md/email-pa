@@ -1,42 +1,32 @@
-import { GraphMessage } from "@/integrations/microsoft-graph/types";
-import {
-  EmailRelevanceClassification,
-  ProcessedEmail,
-} from "@/email-processing/types";
+import config from "@/env";
+import { getSetting, setSetting } from "../integrations/airtable/app-settings.repository";
 
-function getSenderAddress(message: GraphMessage) {
-  return message.sender?.emailAddress?.address ?? "";
-}
-
-export function createProcessedEmailFields({
-  message,
-  runId,
-  processedAt,
+export function calculateRunWindow({
+    startedAt,
+    lastSuccessfulRunAt,
+    lookbackHours,
+    overlapMinutes,
 }: {
-  message: GraphMessage;
-  runId: string;
-  processedAt: string;
-}): ProcessedEmail {
-  return {
-    "Message ID": message.id,
-    "Received At": message.receivedDateTime,
-    Subject: message.subject,
-    Sender: getSenderAddress(message),
-    "Run ID": runId,
-    "Processed At": processedAt,
-  };
+    startedAt: Date;
+    lastSuccessfulRunAt: string | null;
+    lookbackHours: string;
+    overlapMinutes: number;
+}) {
+    const defaultLookbackMs = Number(lookbackHours) * 60 * 60 * 1000;
+
+    return lastSuccessfulRunAt
+        ? new Date(
+            new Date(lastSuccessfulRunAt).getTime() - overlapMinutes * 60 * 1000
+        )
+        : new Date(startedAt.getTime() - defaultLookbackMs);
 }
 
-export function createRelevanceUpdateFields(
-  classification: EmailRelevanceClassification
-): Partial<ProcessedEmail> {
-  const isRelevant = classification.isRelevant;
+export async function getLastSuccessfulRunAt() {
+    const { lastSuccessfulRunKey } = config();
+    return getSetting(lastSuccessfulRunKey);
+}
 
-  return {
-    "Processing Status": isRelevant ? "relevant" : "irrelevant",
-    Relevance: isRelevant ? "relevant" : "irrelevant",
-    "Relevance Confidence": classification.confidence,
-    "Relevance Evidence": classification.evidence.join(" | "),
-    "Error Message": "",
-  };
+export async function setLastSuccessfulRunAt(date: Date) {
+    const { lastSuccessfulRunKey } = config();
+    return setSetting(lastSuccessfulRunKey, date.toISOString());
 }

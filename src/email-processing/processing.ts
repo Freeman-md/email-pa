@@ -1,5 +1,5 @@
-import { classifyEmailRelevance } from "@/email-processing/classifiers/relevance";
-import { createRelevanceUpdateFields } from "@/email-processing/state";
+import { classifyEmailRelevance } from "@/email-processing/classifications/relevance";
+import { createRelevanceUpdateFields } from "@/email-processing/mappers";
 import {
   sleep,
   withRateLimitCooldown,
@@ -7,29 +7,20 @@ import {
 import {
   getProcessedEmail,
   updateProcessedEmail,
-} from "@/integrations/airtable/tables/processed-emails";
+} from "@/integrations/airtable/processed-emails.repository";
 import { NormalizedEmail } from "@/email-processing/types";
-
-const PER_EMAIL_DELAY_MS = 2000;
-const COOLDOWN_EVERY_N_EMAILS = 10;
-const COOLDOWN_DELAY_MS = 15000;
-const RATE_LIMIT_COOLDOWN_MS = 30000;
-const MAX_RATE_LIMIT_RETRIES = 2;
-
-export type RelevanceStageResult = {
-  reviewedCount: number;
-  relevantCount: number;
-  irrelevantCount: number;
-};
+import { COOLDOWN_DELAY_MS, COOLDOWN_EVERY_N_EMAILS, MAX_RATE_LIMIT_RETRIES, PER_EMAIL_DELAY_MS, RATE_LIMIT_COOLDOWN_MS } from "@/shared/constants";
 
 export async function classifyEmailRelevanceStage({
   emails,
 }: {
   emails: NormalizedEmail[];
-}): Promise<RelevanceStageResult> {
-  let reviewedCount = 0;
+}): Promise<{
+  reviewedCount: number;
+  relevantCount: number;
+  irrelevantCount: number;
+}> {
   let relevantCount = 0;
-  let irrelevantCount = 0;
 
   for (let index = 0; index < emails.length; index += 1) {
     const email = emails[index];
@@ -49,14 +40,8 @@ export async function classifyEmailRelevanceStage({
       createRelevanceUpdateFields(classification.relevance)
     );
 
-    reviewedCount += 1;
-
-    const isRelevant = classification.relevance.isRelevant;
-
-    if (isRelevant) {
+    if (classification.relevance.isRelevant) {
       relevantCount += 1;
-    } else {
-      irrelevantCount += 1;
     }
 
     await sleep(PER_EMAIL_DELAY_MS);
@@ -67,8 +52,8 @@ export async function classifyEmailRelevanceStage({
   }
 
   return {
-    reviewedCount,
+    reviewedCount: emails.length,
     relevantCount,
-    irrelevantCount,
+    irrelevantCount: emails.length - relevantCount,
   };
 }

@@ -1,7 +1,6 @@
 import { graphRequest } from "@/integrations/microsoft-graph/client";
 import {
   GraphMessage,
-  GraphMessagesResponse,
 } from "@/integrations/microsoft-graph/types";
 
 const MESSAGE_SELECT_FIELDS = [
@@ -13,37 +12,22 @@ const MESSAGE_SELECT_FIELDS = [
     "bodyPreview",
 ].join(",")
 
-export async function getLatestMessages(limit = 5): Promise<GraphMessagesResponse> {
-    const params = new URLSearchParams({
-        "$top": String(limit),
-        "$select": MESSAGE_SELECT_FIELDS,
-        "$orderby": "receivedDateTime desc"
-    })
+export async function fetchMessages(
+    receivedSince: Date,
+    pageSize = 50
+): Promise<GraphMessage[]> {
+    const messages: GraphMessage[] = []
 
-    return graphRequest(
-        `/me/messages?${params.toString()}`
-    )
-}
-
-export async function getMessagesReceivedSince(receivedSince: Date, limit = 50): Promise<GraphMessagesResponse> {
     const params = new URLSearchParams({
-        "$top": String(limit),
+        "$top": String(pageSize),
         "$select": MESSAGE_SELECT_FIELDS,
         "$orderby": "receivedDateTime desc",
         "$filter": `receivedDateTime ge ${receivedSince.toISOString()}`
     })
 
-    return graphRequest(
+    let response = await graphRequest(
         `/me/messages?${params.toString()}`
     )
-}
-
-export async function getAllMessagesReceivedSince(
-    receivedSince: Date,
-    pageSize = 50
-): Promise<GraphMessage[]> {
-    const messages: GraphMessage[] = []
-    let response = await getMessagesReceivedSince(receivedSince, pageSize)
 
     messages.push(...response.value)
 

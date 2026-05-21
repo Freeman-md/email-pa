@@ -1,4 +1,4 @@
-import config from "@/app/env";
+import config from "@/env";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
@@ -6,15 +6,14 @@ import {
   logRunFinished,
   logRunStarted,
 } from "@/email-processing/logging";
-import { getAllMessagesReceivedSince } from "@/integrations/microsoft-graph/messages";
+import { fetchMessages } from "@/integrations/microsoft-graph/messages";
 import {
   filterUnprocessedMessages,
   markMessagesAsProcessed,
 } from "@/email-processing/dedupe";
-import { normalizeEmails } from "@/email-processing/normalization";
-import { getLastSuccessfulRunAt, setLastSuccessfulRunAt } from "@/email-processing/run-state";
-import { calculateRunWindow } from "@/email-processing/run-window";
-import { classifyEmailRelevanceStage } from "@/email-processing/stages/relevance";
+import { classifyEmailRelevanceStage } from "@/email-processing/processing";
+import { calculateRunWindow, getLastSuccessfulRunAt, setLastSuccessfulRunAt } from "./state";
+import { normalizeEmails } from "./mappers";
 
 const OVERLAP_MINUTES = 1000;
 
@@ -39,7 +38,8 @@ export async function runEmailProcessing() {
     windowStart,
   });
 
-  const messages = await getAllMessagesReceivedSince(windowStart);
+  const messages = await fetchMessages(windowStart);
+
   const { newMessages, skippedMessages } = await filterUnprocessedMessages(
     messages
   );
