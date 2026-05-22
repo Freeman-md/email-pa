@@ -38,7 +38,7 @@ Current state:
   - Return a structured result with `isRelevant`, evidence, and confidence.
   - Skip irrelevant emails but still log that they were reviewed.
 
-- [ ] Implement application-status classification.
+- [x] Implement application-status classification.
   - Classify relevant emails into statuses such as rejection, interview invite, assessment, generic update, or unknown.
   - Keep rules/prompts clear enough to tune manually.
   - Route unknown/low-confidence emails to summary only, not automatic record updates.
@@ -48,7 +48,7 @@ Current state:
   - Update the matching record when confidence is good.
   - Create a new record only when enough information exists and the behavior is intentional.
 
-- [ ] Add email processing logs.
+- [x] Add email processing logs.
   - Store one log entry per processed email.
   - Include message ID, classification, action taken, linked Airtable record, errors, and run ID.
   - Make logs useful for reviewing bad classifications later.

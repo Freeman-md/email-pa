@@ -1,7 +1,7 @@
 import { getSetting, setSetting } from "../integrations/airtable/app-settings.repository";
 import { getEmailProcessingConfig } from "@/config/email-processing";
 
-const OVERLAP_MINUTES = 10;
+const OVERLAP_MINUTES = 1000;
 
 export async function setLastSuccessfulRunAt(date: Date) {
     const { lastSuccessfulRunKey } = getEmailProcessingConfig();
