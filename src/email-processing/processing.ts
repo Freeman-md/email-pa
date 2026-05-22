@@ -1,5 +1,4 @@
-import { classifyEmailRelevance } from "@/email-processing/classifications/relevance";
-import { classifyEmailStatus } from "@/email-processing/classifications/status";
+import { classifyEmailRelevance, classifyEmailStatus } from "@/email-processing/ai";
 import {
   createRelevanceUpdateFields,
   createStatusUpdateFields,
@@ -7,10 +6,10 @@ import {
 import {
   sleep,
   withRateLimitCooldown,
-} from "@/integrations/ai/execution";
+} from "@/shared/retry";
 import {
   fetchMessageWithBody,
-} from "@/integrations/microsoft-graph/messages";
+} from "@/integrations/microsoft-graph/service";
 import {
   getProcessedEmail,
   updateProcessedEmail,

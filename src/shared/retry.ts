@@ -1,4 +1,4 @@
-import { AiRateLimitError } from "@/integrations/ai/types";
+import { AiRateLimitError } from "@/shared/types";
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));

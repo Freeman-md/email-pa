@@ -1,4 +1,3 @@
-import config from "@/env";
 import {
   logEmailDedupeCompleted,
   logFetchedEmails,
@@ -7,7 +6,7 @@ import {
   logRunFinished,
   logRunStarted,
 } from "@/email-processing/logging";
-import { fetchMessages } from "@/integrations/microsoft-graph/messages";
+import { fetchMessages } from "@/integrations/microsoft-graph/service";
 import {
   filterUnprocessedMessages,
   markMessagesAsProcessed,

@@ -1,35 +1,4 @@
-import { z } from "zod";
-import {
-  ClassifiedEmailStatus,
-  EmailStatusClassification,
-  NormalizedEmail,
-} from "@/email-processing/types";
-import { getAiConfig } from "@/integrations/ai/config";
-import { generateText, Output } from "ai";
-
-const statusSchema = z.object({
-  status: z.enum([
-    "rejection",
-    "interview_invitation",
-    "assessment",
-    "generic_update",
-  ]),
-  confidence: z.enum(["high", "medium", "low"]),
-  evidence: z.array(z.string()).max(3),
-});
-
-function buildPrompt(email: NormalizedEmail) {
-  return [
-    `Subject: ${email.subject || "(none)"}`,
-    `Sender Name: ${email.senderName || "(unknown)"}`,
-    `Sender Address: ${email.senderAddress || "(unknown)"}`,
-    `Received At: ${email.receivedAt || "(unknown)"}`,
-    `Body Preview: ${email.bodyPreview || "(none)"}`,
-    `Full Body: ${email.body || "(none)"}`,
-  ].join("\n");
-}
-
-const SYSTEM_PROMPT = `
+export const STATUS_CLASSIFICATION_SYSTEM_PROMPT = `
 You are an email status classifier for job-application related emails.
 
 Your task is to classify one relevant email into exactly one of these statuses:
@@ -107,24 +76,43 @@ The email has already been determined to be relevant to job applications.
 Your only job is to classify its status using the structured output schema.
 `;
 
-export async function classifyEmailStatus(
-  email: NormalizedEmail
-): Promise<ClassifiedEmailStatus> {
-  const { classification } = getAiConfig();
+export const RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT = `
+You classify whether an email is part of a real job application pipeline.
 
-  const result = await generateText({
-    model: classification.model,
-    temperature: classification.temperature,
-    maxOutputTokens: classification.maxOutputTokens,
-    system: SYSTEM_PROMPT,
-    prompt: buildPrompt(email),
-    output: Output.object({
-      schema: statusSchema,
-    }),
-  });
+Mark as RELEVANT only if the email is directly tied to a specific job application, candidate evaluation, or hiring process.
 
-  return {
-    email,
-    status: result.output as EmailStatusClassification,
-  };
-}
+Relevant examples:
+- application confirmations or acknowledgements
+- recruiter outreach tied to a specific role
+- interview scheduling or invitations
+- assessments, take-home tasks, or screening requests
+- requests for additional application information
+- hiring status updates
+- rejection emails
+- offer-stage communication
+
+Mark as IRRELEVANT if the email is generic, promotional, automated, informational, or unrelated to an active candidacy.
+
+Irrelevant examples:
+- job alerts or recommended jobs
+- newsletters or hiring digests
+- recruiting campaigns sent in bulk
+- career advice content
+- marketing or platform engagement emails
+- account/security notifications
+- social network notifications
+- company announcements
+- broad “we’re hiring” outreach without role-specific context
+
+Be strict. Mentioning jobs, careers, hiring, or recruiters alone does NOT make an email relevant.
+
+Output only structured data.
+
+Evidence must be:
+- short
+- verbatim or near-verbatim phrases from the email
+- concrete and decision-relevant
+- not paraphrased summaries
+
+Do not explain reasoning outside the structured output.
+`

@@ -1,21 +1,21 @@
 import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal-node";
-import config from "@/env";
 import { getSetting, setSetting } from "@/integrations/airtable/app-settings.repository";
+import { getMicrosoftGraphConfig } from "@/config/microsoft-graph";
 
 
 export async function getMicrosoftAccessToken() {
-    const { microsoftClientId, microsoftTenantId, microsoftGraphScopes, microsoftTokenCacheKey } = config()
+    const { clientId, tenantId, scopes, tokenCacheKey } = getMicrosoftGraphConfig()
 
     const msalConfig: Configuration = {
         auth: {
-            clientId: microsoftClientId,
-            authority: `https://login.microsoftonline.com/${microsoftTenantId}`,
+            clientId: clientId,
+            authority: `https://login.microsoftonline.com/${tenantId}`,
         }
     }
 
     const app = new PublicClientApplication(msalConfig)
     const tokenCache = app.getTokenCache();
-    const cachedTokenCache = await getSetting(microsoftTokenCacheKey)
+    const cachedTokenCache = await getSetting(tokenCacheKey)
 
     if (cachedTokenCache) {
         tokenCache.deserialize(cachedTokenCache)
@@ -28,10 +28,10 @@ export async function getMicrosoftAccessToken() {
         try {
             const silentResult = await app.acquireTokenSilent({
                 account,
-                scopes: microsoftGraphScopes
+                scopes: scopes
             })
 
-            await setSetting(microsoftTokenCacheKey, tokenCache.serialize())
+            await setSetting(tokenCacheKey, tokenCache.serialize())
 
             return silentResult.accessToken
         } catch (error) {
@@ -42,7 +42,7 @@ export async function getMicrosoftAccessToken() {
     }
 
     const result = await app.acquireTokenByDeviceCode({
-        scopes: microsoftGraphScopes,
+        scopes: scopes,
         deviceCodeCallback: (response) => {
             console.log(response.message)
         }
@@ -52,7 +52,7 @@ export async function getMicrosoftAccessToken() {
         throw new Error('Failed to get Microsoft Graph access token')
     }
 
-    await setSetting(microsoftTokenCacheKey, tokenCache.serialize());
+    await setSetting(tokenCacheKey, tokenCache.serialize());
 
     return result.accessToken
 }

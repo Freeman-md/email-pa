@@ -1,16 +1,16 @@
-import config from "@/env";
+import { getAirtableConfig } from "@/config/airtable";
 import {
     AirtableMultiRecordsResponse,
     AirtableSingleRecordResponse,
 } from "@/integrations/airtable/types";
 
 export default async function airtableRequest(path: string, options: RequestInit = {}) {
-    const { airtableApiUrl, airtableBaseId, airtableToken } = config()
+    const { apiUrl, baseId, token } = getAirtableConfig()
 
-    const response = await fetch(`${airtableApiUrl}/${airtableBaseId}${path}`, {
+    const response = await fetch(`${apiUrl}/${baseId}${path}`, {
         ...options,
         headers: {
-            Authorization: `Bearer ${airtableToken}`,
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             ...options.headers
         }
