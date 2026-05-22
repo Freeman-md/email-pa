@@ -5,14 +5,10 @@ export type ProcessedEmail = {
   Sender?: string;
   "Run ID": string;
   "Processed At": string;
-  "Processing Status"?: string;
-  Relevance?: string;
-  "Relevance Confidence"?: string;
-  "Relevance Evidence"?: string;
-  Status?: string;
-  "Status Confidence"?: string;
-  "Status Evidence"?: string;
-  "Error Message"?: string;
+  Relevant?: boolean;
+  Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update";
+  "Classification Confidence"?: string;
+  "Classification Evidence"?: string;
 };
 
 export type NormalizedEmail = {
@@ -22,7 +18,7 @@ export type NormalizedEmail = {
   senderAddress?: string;
   receivedAt?: string;
   webLink?: string;
-  bodyPreview: string;
+  bodyPreview?: string;
   body?: string;
 };
 

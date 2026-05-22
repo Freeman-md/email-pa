@@ -38,11 +38,9 @@ export function createRelevanceUpdateFields(
     const isRelevant = classification.isRelevant;
 
     return {
-        "Processing Status": isRelevant ? "relevant" : "irrelevant",
-        Relevance: isRelevant ? "relevant" : "irrelevant",
-        "Relevance Confidence": classification.confidence,
-        "Relevance Evidence": classification.evidence.join(" | "),
-        "Error Message": "",
+        Relevant: isRelevant,
+        "Classification Confidence": classification.confidence,
+        "Classification Evidence": classification.evidence.join(" | "),
     };
 }
 
@@ -50,11 +48,9 @@ export function createStatusUpdateFields(
     classification: EmailStatusClassification
 ): Partial<ProcessedEmail> {
     return {
-        "Processing Status": classification.status,
         Status: classification.status,
-        "Status Confidence": classification.confidence,
-        "Status Evidence": classification.evidence.join(" | "),
-        "Error Message": "",
+        "Classification Confidence": classification.confidence,
+        "Classification Evidence": classification.evidence.join(" | "),
     };
 }
 
