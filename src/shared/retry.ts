@@ -1,4 +1,4 @@
-import { AiRateLimitError } from "@/shared/types";
+import { RateLimitError } from "@/shared/types";
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -9,7 +9,7 @@ export function isRateLimitError(error: unknown) {
     return false;
   }
 
-  const candidate = error as AiRateLimitError;
+  const candidate = error as RateLimitError;
 
   return (
     candidate.statusCode === 429 ||

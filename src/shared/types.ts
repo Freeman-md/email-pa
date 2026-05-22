@@ -1,4 +1,4 @@
-export type AiRateLimitError = {
+export type RateLimitError = {
   statusCode?: number;
   type?: string;
   lastError?: {
