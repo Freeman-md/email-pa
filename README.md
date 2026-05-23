@@ -1,4 +1,4 @@
-# Job Email Status Updater
+# Email PA
 
 A cron-style backend service that reads emails from Microsoft Outlook via Microsoft Graph, classifies job-application updates with AI, stores processing state in Airtable, and sends a readable run summary to Telegram.
 
