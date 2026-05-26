@@ -4,7 +4,7 @@ export type ProcessedEmail = {
   Subject?: string;
   Sender?: string;
   "Run ID": string;
-  "Processed At": string;
+  "Created At": string;
   Relevant?: boolean;
   Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update";
   "Classification Confidence"?: string;

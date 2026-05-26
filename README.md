@@ -129,10 +129,8 @@ The project currently expects configuration for:
   - `LAST_SUCCESSFUL_RUN_KEY` (optional)
 
 - AI
-  - `AI_MODEL` (optional)
-  - `AI_CLASSIFICATION_MODEL` (optional)
-  - `AI_CLASSIFICATION_MAX_OUTPUT_TOKENS` (optional)
-  - `AI_CLASSIFICATION_CONCURRENCY` (optional)
+  - `OPENAI_API_KEY`
+  - `DEFAULT_AI_MODEL` (optional)
   - `AI_RETRY_MAX_RETRIES` (optional)
   - `AI_RETRY_BASE_DELAY_MS` (optional)
 

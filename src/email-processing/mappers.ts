@@ -28,7 +28,7 @@ export function createProcessedEmailFields({
         Subject: message.subject,
         Sender: getSenderAddress(message),
         "Run ID": runId,
-        "Processed At": processedAt,
+        "Created At": processedAt,
     };
 }
 

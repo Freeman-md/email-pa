@@ -1,8 +1,11 @@
 import { getAiConfig } from "@/config/ai";
 import { ClassifiedEmailRelevance, ClassifiedEmailStatus, EmailRelevanceClassification, EmailStatusClassification, NormalizedEmail } from "../types";
-import { generateText, Output } from "ai";
+import { openai } from "@/integrations/ai/client";
+import { zodTextFormat } from "openai/helpers/zod";
 import { relevanceSchema, statusSchema } from "./schemas";
 import { RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT, STATUS_CLASSIFICATION_SYSTEM_PROMPT } from "./prompts";
+
+const { defaultModel, classification } = getAiConfig();
 
 function buildPrompt(email: NormalizedEmail) {
   const lines = [
@@ -23,43 +26,53 @@ function buildPrompt(email: NormalizedEmail) {
 export async function classifyEmailStatus(
   email: NormalizedEmail
 ): Promise<ClassifiedEmailStatus> {
-  const { classification } = getAiConfig();
-
-  const result = await generateText({
-    model: classification.model,
+  const response = await openai.responses.parse({
+    model: defaultModel,
     temperature: classification.temperature,
-    maxOutputTokens: classification.maxOutputTokens,
-    system: STATUS_CLASSIFICATION_SYSTEM_PROMPT,
-    prompt: buildPrompt(email),
-    output: Output.object({
-      schema: statusSchema,
-    }),
+    input: [
+      {
+        role: "system",
+        content: STATUS_CLASSIFICATION_SYSTEM_PROMPT,
+      },
+      {
+        role: "user",
+        content: buildPrompt(email),
+      },
+    ],
+    text: {
+      format: zodTextFormat(statusSchema, "email_status"),
+    },
   });
 
   return {
     email,
-    status: result.output as EmailStatusClassification,
+    status: response.output_parsed as EmailStatusClassification,
   };
 }
 
 export async function classifyEmailRelevance(
     email: NormalizedEmail
 ): Promise<ClassifiedEmailRelevance> {
-    const { classification } = getAiConfig();
-
-    const result = await generateText({
-        model: classification.model,
+    const response = await openai.responses.parse({
+        model: defaultModel,
         temperature: classification.temperature,
-        maxOutputTokens: classification.maxOutputTokens,
-        system: RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT,
-        prompt: buildPrompt(email),
-        output: Output.object({
-            schema: relevanceSchema,
-        }),
+        input: [
+          {
+            role: "system",
+            content: RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT,
+          },
+          {
+            role: "user",
+            content: buildPrompt(email),
+          },
+        ],
+        text: {
+          format: zodTextFormat(relevanceSchema, "email_relevance"),
+        },
     });
 
     return {
         email,
-        relevance: result.output as EmailRelevanceClassification,
+        relevance: response.output_parsed as EmailRelevanceClassification,
     };
 }
