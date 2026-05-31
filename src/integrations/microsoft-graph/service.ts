@@ -1,6 +1,6 @@
 import { graphRequest } from "@/integrations/microsoft-graph/client";
 import {
-  GraphMessage,
+    GraphEmail,
 } from "@/integrations/microsoft-graph/types";
 
 const MESSAGE_SELECT_FIELDS = [
@@ -17,11 +17,11 @@ const FULL_MESSAGE_SELECT_FIELDS = [
     "body",
 ]
 
-export async function fetchMessages(
+export async function fetchEmails(
     receivedSince: Date,
     pageSize = 50
-): Promise<GraphMessage[]> {
-    const messages: GraphMessage[] = []
+): Promise<GraphEmail[]> {
+    const messages: GraphEmail[] = []
 
     const params = new URLSearchParams({
         "$top": String(pageSize),
@@ -46,7 +46,7 @@ export async function fetchMessages(
 
 export async function fetchMessageWithBody(
     messageId: string
-): Promise<GraphMessage> {
+): Promise<GraphEmail> {
     const params = new URLSearchParams({
         "$select": FULL_MESSAGE_SELECT_FIELDS.join(','),
     })

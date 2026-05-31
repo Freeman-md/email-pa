@@ -1,4 +1,4 @@
-export type GraphMessage = {
+export type GraphEmail = {
   id: string;
   subject?: string;
   sender?: {
@@ -16,7 +16,7 @@ export type GraphMessage = {
   };
 };
 
-export type GraphMessagesResponse = {
-  value: GraphMessage[];
+export type GraphEmailsResponse = {
+  value: GraphEmail[];
   "@odata.nextLink"?: string;
 };

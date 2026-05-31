@@ -1,24 +1,17 @@
-export type ProcessedEmail = {
+export type Email = {
   "Message ID": string;
   "Received At"?: string;
   Subject?: string;
-  Sender?: string;
-  "Run ID": string;
-  "Created At": string;
+  "Sender Name"?: string;
+  "Sender Address"?: string;
+  "Web Link"?: string;
+  "Created At"?: string;
   Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update" | "irrelevant";
   "Classification Confidence"?: string;
-  "Classification Evidence"?: string;
-};
-
-export type NormalizedEmail = {
-  messageId: string;
-  subject: string;
-  senderName?: string;
-  senderAddress?: string;
-  receivedAt?: string;
-  webLink?: string;
-  bodyPreview?: string;
-  body?: string;
+  "Classification Evidence"?: string; 
+} & {
+  "Body Preview"?: string;
+  "Body"?: string
 };
 
 export type EmailRelevanceClassification = {
@@ -29,20 +22,20 @@ export type EmailRelevanceClassification = {
 
 export type EmailStatusClassification = {
   status:
-    | "rejection"
-    | "interview_invitation"
-    | "assessment"
-    | "generic_update";
+  | "rejection"
+  | "interview_invitation"
+  | "assessment"
+  | "generic_update";
   confidence: "high" | "medium" | "low";
   evidence: string[];
 };
 
 export type ClassifiedEmailRelevance = {
-  email: NormalizedEmail;
+  email: Email;
   relevance: EmailRelevanceClassification;
 };
 
 export type ClassifiedEmailStatus = {
-  email: NormalizedEmail;
+  email: Email;
   status: EmailStatusClassification;
 };

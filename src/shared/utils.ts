@@ -1,3 +1,6 @@
+export const MAX_FULL_BODY_LENGTH = 8000;
+export const MAX_BODY_PREVIEW_LENGTH = 1000;
+
 export function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
 }

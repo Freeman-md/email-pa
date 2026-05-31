@@ -1,5 +1,3 @@
-import { NormalizedEmail } from "@/email-processing/types";
-
 export function logRunStarted({
   runId,
   startedAt,
@@ -19,69 +17,6 @@ export function logRunStarted({
     lookbackHours,
     lastSuccessfulRunAt,
     windowStart: windowStart.toISOString(),
-  });
-}
-
-export function logEmailDedupeCompleted({
-  runId,
-  fetchedCount,
-  newCount,
-  skippedCount,
-}: {
-  runId: string;
-  fetchedCount: number;
-  newCount: number;
-  skippedCount: number;
-}) {
-  console.log("Email dedupe completed", {
-    runId,
-    fetchedCount,
-    newCount,
-    skippedCount,
-  });
-}
-
-export function logRelevanceClassificationCompleted({
-  runId,
-  reviewedCount,
-  relevantCount,
-  irrelevantCount,
-}: {
-  runId: string;
-  reviewedCount: number;
-  relevantCount: number;
-  irrelevantCount: number;
-}) {
-  console.log("Email relevance classification completed", {
-    runId,
-    reviewedCount,
-    relevantCount,
-    irrelevantCount,
-  });
-}
-
-export function logStatusClassificationCompleted({
-  runId,
-  reviewedCount,
-  rejectionCount,
-  interviewInvitationCount,
-  assessmentCount,
-  genericUpdateCount,
-}: {
-  runId: string;
-  reviewedCount: number;
-  rejectionCount: number;
-  interviewInvitationCount: number;
-  assessmentCount: number;
-  genericUpdateCount: number;
-}) {
-  console.log("Email status classification completed", {
-    runId,
-    reviewedCount,
-    rejectionCount,
-    interviewInvitationCount,
-    assessmentCount,
-    genericUpdateCount,
   });
 }
 

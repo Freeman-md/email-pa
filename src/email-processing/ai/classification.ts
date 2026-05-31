@@ -1,5 +1,5 @@
 import { getAiConfig } from "@/config/ai";
-import { ClassifiedEmailRelevance, ClassifiedEmailStatus, EmailRelevanceClassification, EmailStatusClassification, NormalizedEmail } from "../types";
+import { ClassifiedEmailRelevance, ClassifiedEmailStatus, EmailRelevanceClassification, EmailStatusClassification, Email } from "../types";
 import { openai } from "@/integrations/ai/client";
 import { zodTextFormat } from "openai/helpers/zod";
 import { relevanceSchema, statusSchema } from "./schemas";
@@ -7,24 +7,24 @@ import { RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT, STATUS_CLASSIFICATION_SYSTEM_PR
 
 const { defaultModel, classification } = getAiConfig();
 
-function buildPrompt(email: NormalizedEmail) {
+function buildPrompt(email: Email) {
   const lines = [
-    `Subject: ${email.subject || "(none)"}`,
-    `Sender Name: ${email.senderName || "(unknown)"}`,
-    `Sender Address: ${email.senderAddress || "(unknown)"}`,
-    `Received At: ${email.receivedAt || "(unknown)"}`,
-    `Body Preview: ${email.bodyPreview || "(none)"}`,
+    `Subject: ${email.Subject || "(none)"}`,
+    `Sender Name: ${email["Sender Name"] || "(unknown)"}`,
+    `Sender Address: ${email["Sender Address"] || "(unknown)"}`,
+    `Received At: ${email["Received At"] || "(unknown)"}`,
+    `Body Preview: ${email["Body Preview"] || "(none)"}`,
   ];
 
-  if (email.body) {
-    lines.push(`Full Body: ${email.body}`);
+  if (email.Body) {
+    lines.push(`Full Body: ${email.Body}`);
   }
 
   return lines.join("\n");
 }
 
 export async function classifyEmailStatus(
-  email: NormalizedEmail
+  email: Email
 ): Promise<ClassifiedEmailStatus> {
   const response = await openai.responses.parse({
     model: defaultModel,
@@ -51,7 +51,7 @@ export async function classifyEmailStatus(
 }
 
 export async function classifyEmailRelevance(
-    email: NormalizedEmail
+    email: Email
 ): Promise<ClassifiedEmailRelevance> {
     const response = await openai.responses.parse({
         model: defaultModel,
