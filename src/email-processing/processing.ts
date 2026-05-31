@@ -1,4 +1,4 @@
-import { classifyEmailRelevance, classifyEmailStatus } from "@/email-processing/ai";
+import { classifyEmailRelevance, classifyEmailStatus } from "@/email-processing/ai/classification";
 import {
   createRelevanceUpdateFields,
   createStatusUpdateFields,

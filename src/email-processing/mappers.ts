@@ -38,7 +38,6 @@ export function createRelevanceUpdateFields(
     const isRelevant = classification.isRelevant;
 
     return {
-        Relevant: isRelevant,
         "Classification Confidence": classification.confidence,
         "Classification Evidence": classification.evidence.join(" | "),
     };

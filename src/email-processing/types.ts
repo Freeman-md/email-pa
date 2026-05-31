@@ -5,8 +5,7 @@ export type ProcessedEmail = {
   Sender?: string;
   "Run ID": string;
   "Created At": string;
-  Relevant?: boolean;
-  Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update";
+  Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update" | "irrelevant";
   "Classification Confidence"?: string;
   "Classification Evidence"?: string;
 };

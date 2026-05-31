@@ -1,6 +1,5 @@
 import {
   logEmailDedupeCompleted,
-  logFetchedEmails,
   logRelevanceClassificationCompleted,
   logStatusClassificationCompleted,
   logRunFinished,
@@ -44,7 +43,6 @@ export async function runEmailProcessing() {
   );
   const normalizedEmails = normalizeEmails(newMessages);
 
-  logFetchedEmails(runId, normalizedEmails);
   logEmailDedupeCompleted({
     runId,
     fetchedCount: messages.length,

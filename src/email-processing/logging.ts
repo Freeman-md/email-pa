@@ -22,20 +22,6 @@ export function logRunStarted({
   });
 }
 
-export function logFetchedEmails(runId: string, emails: NormalizedEmail[]) {
-  console.log("Fetched windowed emails", {
-    runId,
-    count: emails.length,
-    emails: emails.map((email) => ({
-      subject: email.subject,
-      from: email.senderAddress,
-      receivedAt: email.receivedAt,
-      webLink: email.webLink,
-      bodyPreview: email.bodyPreview,
-    })),
-  });
-}
-
 export function logEmailDedupeCompleted({
   runId,
   fetchedCount,
