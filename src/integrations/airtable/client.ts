@@ -2,7 +2,7 @@ import { getAirtableConfig } from "@/config/airtable";
 import {
     AirtableMultiRecordsResponse,
     AirtableSingleRecordResponse,
-} from "@/integrations/airtable/types";
+} from "@/shared/types";
 
 export default async function airtableRequest(path: string, options: RequestInit = {}) {
     const { apiUrl, baseId, token } = getAirtableConfig()
@@ -37,7 +37,7 @@ export async function getRecord<T extends Record<string, unknown>>(
     return airtableRequest(`/${encodeURIComponent(tableName)}/${recordId}`)
 }
 
-export async function createRecords<T extends Record<string, unknown>>(
+export async function createRecord<T extends Record<string, unknown>>(
     tableName: string,
     fields: T
 ): Promise<AirtableMultiRecordsResponse<T>> {

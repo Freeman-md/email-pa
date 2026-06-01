@@ -1,6 +1,6 @@
 import { escapeAirtableString } from "@/shared/utils";
-import { createRecords, listRecords, updateRecord } from "@/integrations/airtable/client";
-import { Email } from "@/email-processing/types";
+import { createRecord, listRecords, updateRecord } from "@/integrations/airtable/client";
+import { Email } from "@/integrations/ai/types";
 import { AirtableRecord } from "@/integrations/airtable/types";
 
 const EMAILS_TABLE = "Emails"
@@ -19,7 +19,7 @@ export async function getEmail(messageId: string): Promise<AirtableRecord<Email>
 }
 
 export async function createEmail(fields: Email): Promise<AirtableRecord<Email>> {
-  const response = await createRecords<Email>(EMAILS_TABLE, fields);
+  const response = await createRecord<Email>(EMAILS_TABLE, fields);
 
   return response.records[0]
 }

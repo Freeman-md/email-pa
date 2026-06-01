@@ -1,4 +1,4 @@
-import { getSetting, setSetting } from "../integrations/airtable/app-settings.repository";
+import { getSetting, setSetting } from "../integrations/airtable/repositories/app-settings";
 import { getEmailProcessingConfig } from "@/config/email-processing";
 
 const OVERLAP_MINUTES = 10;

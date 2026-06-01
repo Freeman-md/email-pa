@@ -1,5 +1,5 @@
 import { AccountInfo, Configuration, PublicClientApplication } from "@azure/msal-node";
-import { getSetting, setSetting } from "@/integrations/airtable/app-settings.repository";
+import { getSetting, setSetting } from "@/integrations/airtable/repositories/app-settings";
 import { getMicrosoftGraphConfig } from "@/config/microsoft-graph";
 
 

@@ -1,17 +1,12 @@
-import { createRecords, listRecords, updateRecord } from "@/integrations/airtable/client";
-
-export type AppSettings = {
-  Key: string;
-  Value?: string;
-  "Updated At"?: string;
-};
+import { createRecord, listRecords, updateRecord } from "@/integrations/airtable/client";
+import { AppSetting } from "@/shared/types";
 
 const APP_SETTINGS_TABLE = "App Settings";
 
 async function findSettingByKey(key: string) {
   const formula = encodeURIComponent(`{Key}='${key}'`);
 
-  const response = await listRecords<AppSettings>(
+  const response = await listRecords<AppSetting>(
     APP_SETTINGS_TABLE,
     `?filterByFormula=${formula}&maxRecords=1`
   );
@@ -38,12 +33,12 @@ export async function setSetting(key: string, value: string) {
   };
 
   if (existingRecord) {
-    return updateRecord<AppSettings>(
+    return updateRecord<AppSetting>(
       APP_SETTINGS_TABLE,
       existingRecord.id,
       fields
     );
   }
 
-  return createRecords<AppSettings>(APP_SETTINGS_TABLE, fields);
+  return createRecord<AppSetting>(APP_SETTINGS_TABLE, fields);
 }

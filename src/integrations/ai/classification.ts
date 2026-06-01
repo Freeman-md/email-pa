@@ -1,5 +1,5 @@
 import { getAiConfig } from "@/config/ai";
-import { ClassifiedEmailRelevance, ClassifiedEmailStatus, EmailRelevanceClassification, EmailStatusClassification, Email } from "../types";
+import { ClassifiedEmailRelevance, ClassifiedEmailStatus, EmailRelevanceClassification, EmailStatusClassification, Email } from "@/shared/types";
 import { openai } from "@/integrations/ai/client";
 import { zodTextFormat } from "openai/helpers/zod";
 import { relevanceSchema, statusSchema } from "./schemas";
@@ -51,28 +51,28 @@ export async function classifyEmailStatus(
 }
 
 export async function classifyEmailRelevance(
-    email: Email
+  email: Email
 ): Promise<ClassifiedEmailRelevance> {
-    const response = await openai.responses.parse({
-        model: defaultModel,
-        temperature: classification.temperature,
-        input: [
-          {
-            role: "system",
-            content: RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT,
-          },
-          {
-            role: "user",
-            content: buildPrompt(email),
-          },
-        ],
-        text: {
-          format: zodTextFormat(relevanceSchema, "email_relevance"),
-        },
-    });
+  const response = await openai.responses.parse({
+    model: defaultModel,
+    temperature: classification.temperature,
+    input: [
+      {
+        role: "system",
+        content: RELEVANCE_CLASSIFICATION_SYSTEM_PROMPT,
+      },
+      {
+        role: "user",
+        content: buildPrompt(email),
+      },
+    ],
+    text: {
+      format: zodTextFormat(relevanceSchema, "email_relevance"),
+    },
+  });
 
-    return {
-        email,
-        relevance: response.output_parsed as EmailRelevanceClassification,
-    };
+  return {
+    email,
+    relevance: response.output_parsed as EmailRelevanceClassification,
+  };
 }

@@ -1,3 +1,5 @@
+export const MAX_FULL_BODY_LENGTH = 8000;
+export const MAX_BODY_PREVIEW_LENGTH = 1000;
 export const PER_EMAIL_DELAY_MS = 2000;
 export const COOLDOWN_EVERY_N_EMAILS = 10;
 export const COOLDOWN_DELAY_MS = 15000;
