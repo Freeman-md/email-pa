@@ -1,7 +1,5 @@
 import { graphRequest } from "@/integrations/microsoft-graph/client";
-import {
-    GraphEmail,
-} from "@/integrations/microsoft-graph/types";
+import { GraphEmail } from "@/shared/types";
 
 const MESSAGE_SELECT_FIELDS = [
     "id",
@@ -44,7 +42,7 @@ export async function fetchEmails(
     return messages
 }
 
-export async function fetchMessageWithBody(
+export async function fetchEmailWithBody(
     messageId: string
 ): Promise<GraphEmail> {
     const params = new URLSearchParams({
@@ -54,4 +52,22 @@ export async function fetchMessageWithBody(
     return graphRequest(
         `/me/messages/${encodeURIComponent(messageId)}?${params.toString()}`
     )
+}
+
+export async function markEmailAsRead(messageId: string) {
+    return graphRequest(`/me/messages/${encodeURIComponent(messageId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            isRead: true
+        })
+    })
+}
+
+export async function markEmailAsUnread(messageId: string) {
+    return graphRequest(`/me/messages/${encodeURIComponent(messageId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify({
+            isRead: false
+        })
+    })
 }

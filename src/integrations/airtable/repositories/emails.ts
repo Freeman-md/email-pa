@@ -1,7 +1,6 @@
 import { escapeAirtableString } from "@/shared/utils";
 import { createRecord, listRecords, updateRecord } from "@/integrations/airtable/client";
-import { Email } from "@/integrations/ai/types";
-import { AirtableRecord } from "@/integrations/airtable/types";
+import { AirtableRecord, Email } from "@/shared/types";
 
 const EMAILS_TABLE = "Emails"
 

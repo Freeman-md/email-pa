@@ -9,15 +9,15 @@ const { defaultModel, classification } = getAiConfig();
 
 function buildPrompt(email: Email) {
   const lines = [
-    `Subject: ${email.Subject || "(none)"}`,
-    `Sender Name: ${email["Sender Name"] || "(unknown)"}`,
-    `Sender Address: ${email["Sender Address"] || "(unknown)"}`,
-    `Received At: ${email["Received At"] || "(unknown)"}`,
-    `Body Preview: ${email["Body Preview"] || "(none)"}`,
+    `Subject: ${email.subject || "(none)"}`,
+    `Sender Name: ${email.sender_name || "(unknown)"}`,
+    `Sender Address: ${email.sender_address || "(unknown)"}`,
+    `Received At: ${email.received_at || "(unknown)"}`,
+    `Body Preview: ${email.body_preview || "(none)"}`,
   ];
 
-  if (email.Body) {
-    lines.push(`Full Body: ${email.Body}`);
+  if (email.body) {
+    lines.push(`Full Body: ${email.body}`);
   }
 
   return lines.join("\n");

@@ -5,19 +5,19 @@ export type AppSetting = {
 };
 
 export type Email = {
-  "Message ID": string;
-  "Received At"?: string;
-  Subject?: string;
-  "Sender Name"?: string;
-  "Sender Address"?: string;
-  "Web Link"?: string;
-  "Created At"?: string;
+  message_id: string;
+  received_at?: string;
+  subject?: string;
+  sender_name?: string;
+  sender_address?: string;
+  web_link?: string;
+  created_at?: string;
   Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update" | "irrelevant";
-  "Classification Confidence"?: string;
-  "Classification Evidence"?: string; 
+  classification_confidence?: string;
+  classification_evidence?: string;
 } & {
-  "Body Preview"?: string;
-  "Body"?: string
+  body_preview?: string;
+  body?: string
 };
 
 export type AirtableRecord<T extends Record<string, unknown>> = {
