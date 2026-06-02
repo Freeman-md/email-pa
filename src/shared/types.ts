@@ -12,7 +12,7 @@ export type Email = {
   sender_address?: string;
   web_link?: string;
   created_at?: string;
-  Status?: "rejection" | "interview_invitation" | "assessment" | "generic_update" | "irrelevant";
+  status?: "rejection" | "interview_invitation" | "assessment" | "generic_update" | "irrelevant";
   classification_confidence?: string;
   classification_evidence?: string;
 } & {

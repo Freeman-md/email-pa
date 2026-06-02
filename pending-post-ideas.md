@@ -52,14 +52,24 @@ for (const message of messages) {
 - if processing marks an email as read and then fails, that side effect must be undone
 - retrying on top of dirty state is weak engineering
 - rollback first, retry second
+- but not every failure deserves rollback
+- some failures are side effects, not core pipeline failures
 
 ### What rollback covered
 - delete the Airtable record if that attempt created it
 - mark the Outlook email as unread if that attempt marked it as read
 
+### Nuance
+- I initially treated `markEmailAsRead(...)` failure as a full pipeline failure
+- that turned out to be the wrong boundary
+- classification + persistence are the core outcome
+- marking as read is a side effect
+- side-effect failure should be logged, not used to restart the whole classification pipeline
+
 ### Angle
 - retries are not resilience on their own
 - recovery paths matter just as much
+- good rollback design depends on knowing what is truly core vs what is ancillary
 
 ---
 

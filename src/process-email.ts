@@ -1,10 +1,20 @@
 import { fetchEmailWithBody, markEmailAsRead, markEmailAsUnread } from "@/integrations/microsoft-graph/service";
 import { AirtableRecord, Email, GraphEmail } from "@/shared/types";
 import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
+import {
+  logEmailProcessingStarted,
+  logEmailRecordReady,
+  logEmailRelevanceClassified,
+  logEmailStatusClassified,
+  logFailedToMarkEmailAsRead,
+  logMarkingEmailAsRead,
+  logRetryingEmailProcessing,
+  logRollingBackEmailProcessing,
+} from "@/shared/logging";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
 import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
 import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH, MAX_RATE_LIMIT_RETRIES, PROCESS_RETRY_DELAY_MS } from "./shared/constants";
-import { isRetryableProcessingError, sleep, withRetryCooldown } from "./shared/retry";
+import { isRetryableProcessingError, withRetryCooldown } from "./shared/retry";
 
 async function enrichEmailWithFullBody(
   email: Email
@@ -70,7 +80,7 @@ async function finalizeIrrelevantEmail(
   relevanceResult: Awaited<ReturnType<typeof classifyEmailRelevance>>
 ): Promise<Email> {
   const updatedRecord = await updateEmail(recordId, {
-    Status: "irrelevant",
+    status: "irrelevant",
     classification_confidence: relevanceResult.relevance.confidence,
     classification_evidence: relevanceResult.relevance.evidence.join(" | "),
   });
@@ -87,7 +97,7 @@ async function finalizeClassifiedEmail(
   statusResult: Awaited<ReturnType<typeof classifyEmailStatus>>
 ): Promise<Email> {
   const updatedRecord = await updateEmail(recordId, {
-    Status: statusResult.status.status,
+    status: statusResult.status.status,
     classification_confidence: statusResult.status.confidence,
     classification_evidence: statusResult.status.evidence.join(" | "),
   });
@@ -100,12 +110,11 @@ async function finalizeClassifiedEmail(
 
 async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void> {
   let createdRecordId: string | null = null;
-  let markedAsRead = false;
 
   try {
-    console.log("Processing email", {
+    logEmailProcessingStarted({
       messageId: graphEmail.id,
-      subject: graphEmail.subject ?? "(none)",
+      subject: graphEmail.subject,
     });
 
     const { record, newEmailCreated } = await getOrCreateEmailRecord(graphEmail);
@@ -114,13 +123,13 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
       createdRecordId = record.id;
     }
 
-    console.log("Email record ready", {
+    logEmailRecordReady({
       messageId: graphEmail.id,
       recordId: record.id,
       newEmailCreated,
     });
 
-    if (record.fields.Status) {
+    if (record.fields.status) {
       return record.fields;
     }
 
@@ -128,51 +137,58 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
 
     const relevanceResult = await classifyEmailRelevance(normalizedEmail);
 
-    console.log("Relevance classified", {
+    logEmailRelevanceClassified({
       messageId: graphEmail.id,
       isRelevant: relevanceResult.relevance.isRelevant,
       confidence: relevanceResult.relevance.confidence,
     });
 
+    let processedEmail: Email;
+
     if (!relevanceResult.relevance.isRelevant) {
-      return finalizeIrrelevantEmail(record.id, normalizedEmail, relevanceResult);
+      processedEmail = await finalizeIrrelevantEmail(
+        record.id,
+        normalizedEmail,
+        relevanceResult
+      );
+    } else {
+      const statusResult = await classifyEmailStatus(
+        await enrichEmailWithFullBody(normalizedEmail)
+      );
+
+      logEmailStatusClassified({
+        messageId: graphEmail.id,
+        status: statusResult.status.status,
+        confidence: statusResult.status.confidence,
+      });
+
+      processedEmail = await finalizeClassifiedEmail(
+        record.id,
+        normalizedEmail,
+        statusResult
+      );
     }
 
-    const statusResult = await classifyEmailStatus(
-      await enrichEmailWithFullBody(normalizedEmail)
-    );
+    logMarkingEmailAsRead(graphEmail.id);
 
-    console.log("Status classified", {
-      messageId: graphEmail.id,
-      status: statusResult.status.status,
-      confidence: statusResult.status.confidence,
-    });
+    try {
+      await markEmailAsRead(graphEmail.id);
+    } catch (error) {
+      logFailedToMarkEmailAsRead({ messageId: graphEmail.id, error: error instanceof Error ? error.message : String(error),
+      });
+    }
 
-    console.log("Marking email as read", {
-      messageId: graphEmail.id,
-    });
-
-    await markEmailAsRead(graphEmail.id);
-    markedAsRead = true;
-
-    return finalizeClassifiedEmail(record.id, normalizedEmail, statusResult);
+    return processedEmail;
   } catch (error) {
-    console.log("Rolling back email processing", {
+    logRollingBackEmailProcessing({
       messageId: graphEmail.id,
-      markedAsRead,
       createdRecordId,
     });
-
-    if (markedAsRead) {
-      try {
-        await markEmailAsUnread(graphEmail.id);
-      } catch {}
-    }
 
     if (createdRecordId) {
       try {
         await deleteEmail(createdRecordId);
-      } catch {}
+      } catch { }
     }
 
     throw error;
@@ -190,7 +206,7 @@ export async function processEmail(graphEmail: GraphEmail): Promise<Email | void
         const errorMessage =
           error instanceof Error ? error.message : String(error);
 
-        console.warn("Retrying email processing", {
+        logRetryingEmailProcessing({
           messageId: graphEmail.id,
           attempt,
           maxRetries: MAX_RATE_LIMIT_RETRIES,
