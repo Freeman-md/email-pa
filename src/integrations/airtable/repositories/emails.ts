@@ -1,12 +1,12 @@
 import { escapeAirtableString } from "@/shared/utils";
-import { createRecord, listRecords, updateRecord } from "@/integrations/airtable/client";
+import { createRecord, deleteRecord, listRecords, updateRecord } from "@/integrations/airtable/client";
 import { AirtableRecord, Email } from "@/shared/types";
 
 const EMAILS_TABLE = "Emails"
 
 export async function getEmail(messageId: string): Promise<AirtableRecord<Email> | null> {
   const formula = encodeURIComponent(
-    `{Message ID}='${escapeAirtableString(messageId)}'`
+    `{message_id}='${escapeAirtableString(messageId)}'`
   );
 
   const response = await listRecords<Email>(
@@ -28,4 +28,10 @@ export async function updateEmail(
   fields: Partial<Email>
 ): Promise<AirtableRecord<Email>> {
   return await updateRecord<Email>(EMAILS_TABLE, recordId, fields);
+}
+
+export async function deleteEmail(
+  recordId: string
+): Promise<AirtableRecord<Email>> {
+  return deleteRecord<Email>("Emails", recordId);
 }

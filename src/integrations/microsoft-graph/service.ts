@@ -19,7 +19,7 @@ export async function fetchEmails(
     receivedSince: Date,
     pageSize = 50
 ): Promise<GraphEmail[]> {
-    const messages: GraphEmail[] = []
+    const emails: GraphEmail[] = []
 
     const params = new URLSearchParams({
         "$top": String(pageSize),
@@ -32,14 +32,14 @@ export async function fetchEmails(
         `/me/messages?${params.toString()}`
     )
 
-    messages.push(...response.value)
+    emails.push(...response.value)
 
     while (response["@odata.nextLink"]) {
         response = await graphRequest(response["@odata.nextLink"])
-        messages.push(...response.value)
+        emails.push(...response.value)
     }
 
-    return messages
+    return emails
 }
 
 export async function fetchEmailWithBody(

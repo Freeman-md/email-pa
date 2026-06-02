@@ -59,3 +59,16 @@ export async function updateRecord<T extends Record<string, unknown>>(
         body: JSON.stringify({ fields })
     })
 }
+
+
+export async function deleteRecord<T extends Record<string, unknown>>(
+    tableName: string, 
+    recordId: string
+): Promise<AirtableSingleRecordResponse<T>> {
+  return airtableRequest(
+    `/${encodeURIComponent(tableName)}/${recordId}`,
+    {
+      method: "DELETE",
+    }
+  );
+}

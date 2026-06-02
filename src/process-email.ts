@@ -1,6 +1,6 @@
-import { fetchEmailWithBody, markEmailAsRead } from "@/integrations/microsoft-graph/service";
-import { Email, GraphEmail } from "@/shared/types";
-import { createEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
+import { fetchEmailWithBody, markEmailAsRead, markEmailAsUnread } from "@/integrations/microsoft-graph/service";
+import { AirtableRecord, Email, GraphEmail } from "@/shared/types";
+import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
 import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
 import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH } from "./shared/constants";
@@ -19,14 +19,22 @@ async function enrichEmailWithFullBody(
   };
 }
 
-async function getOrCreateEmailRecord(graphEmail: GraphEmail) {
+async function getOrCreateEmailRecord(
+  graphEmail: GraphEmail
+): Promise<{
+  record: AirtableRecord<Email>;
+  newEmailCreated: boolean;
+}> {
   const existingRecord = await getEmail(graphEmail.id);
 
   if (existingRecord) {
-    return existingRecord;
+    return {
+      record: existingRecord,
+      newEmailCreated: false,
+    };
   }
 
-  return createEmail({
+  const createdRecord = await createEmail({
     message_id: graphEmail.id,
     received_at: graphEmail.receivedDateTime,
     subject: graphEmail.subject,
@@ -34,6 +42,11 @@ async function getOrCreateEmailRecord(graphEmail: GraphEmail) {
     sender_address: graphEmail.sender?.emailAddress?.address,
     web_link: graphEmail.webLink,
   });
+
+  return {
+    record: createdRecord,
+    newEmailCreated: true,
+  };
 }
 
 function normalizeGraphEmail(
@@ -50,7 +63,7 @@ function normalizeGraphEmail(
   };
 }
 
-async function finalizeIrrelavantEmail(
+async function finalizeIrrelevantEmail(
   recordId: string,
   email: Email,
   relevanceResult: Awaited<ReturnType<typeof classifyEmailRelevance>>
@@ -85,8 +98,15 @@ async function finalizeClassifiedEmail(
 }
 
 export async function processEmail(graphEmail: GraphEmail): Promise<Email | void> {
+  let createdRecordId: string | null = null
+  let markedAsRead = false
+
   try {
-    const record = await getOrCreateEmailRecord(graphEmail);
+    const { record, newEmailCreated } = await getOrCreateEmailRecord(graphEmail);
+    
+    if (newEmailCreated) {
+      createdRecordId = record.id;
+    }
 
     if (record.fields.Status) {
       return record.fields;
@@ -97,7 +117,7 @@ export async function processEmail(graphEmail: GraphEmail): Promise<Email | void
     const relevanceResult = await classifyEmailRelevance(normalizedEmail);
 
     if (!relevanceResult.relevance.isRelevant) {
-      return finalizeIrrelavantEmail(record.id, normalizedEmail, relevanceResult);
+      return finalizeIrrelevantEmail(record.id, normalizedEmail, relevanceResult);
     }
 
     const statusResult = await classifyEmailStatus(
@@ -105,14 +125,27 @@ export async function processEmail(graphEmail: GraphEmail): Promise<Email | void
     );
 
     await markEmailAsRead(graphEmail.id);
+    markedAsRead = true;
 
     return finalizeClassifiedEmail(record.id, normalizedEmail, statusResult);
   } catch (error) {
+    if (markedAsRead) {
+      try {
+        await markEmailAsUnread(graphEmail.id);
+      } catch {}
+    }
+
+     if (createdRecordId) {
+      try {
+        await deleteEmail(createdRecordId);
+      } catch {}
+    }
+
     const errorMessage =
       error instanceof Error ? error.message : String(error);
 
     throw new Error(
-      `Failed to initialize email processing (messageId: ${graphEmail.id}): ${errorMessage}`
+      `Failed to process email (messageId: ${graphEmail.id}): ${errorMessage}`
     );
   }
 }

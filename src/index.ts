@@ -27,9 +27,11 @@ try {
     count: messages.length,
   });
 
-  const processedEmails = await Promise.all(
-    messages.map((message) => processEmail(message))
-  );
+  const processedEmails = [];
+
+  for (const message of messages) {
+    processedEmails.push(await processEmail(message));
+  }
 
   console.log("Processed emails", {
     runId,
