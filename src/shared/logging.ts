@@ -28,118 +28,41 @@ export function logRunFinished(runId: string) {
   });
 }
 
-export function logEmailProcessingStarted({
-  messageId,
-  subject,
-}: {
-  messageId: string;
-  subject?: string;
-}) {
-  console.log("Processing email", {
-    messageId,
-    subject: subject ?? "(none)",
-  });
-}
-
-export function logEmailRecordReady({
-  messageId,
-  recordId,
-  newEmailCreated,
-}: {
-  messageId: string;
-  recordId: string;
-  newEmailCreated: boolean;
-}) {
-  console.log("Email record ready", {
-    messageId,
-    recordId,
-    newEmailCreated,
-  });
-}
-
-export function logEmailRelevanceClassified({
-  messageId,
-  isRelevant,
-  confidence,
-}: {
-  messageId: string;
-  isRelevant: boolean;
-  confidence: "high" | "medium" | "low";
-}) {
-  console.log("Relevance classified", {
-    messageId,
-    isRelevant,
-    confidence,
-  });
-}
-
-export function logEmailStatusClassified({
-  messageId,
-  status,
-  confidence,
-}: {
-  messageId: string;
-  status: string;
-  confidence: "high" | "medium" | "low";
-}) {
-  console.log("Status classified", {
-    messageId,
-    status,
-    confidence,
-  });
-}
-
-export function logMarkingEmailAsRead(messageId: string) {
-  console.log("Marking email as read", {
+export function logEmailEvent(
+  eventType:
+    | "processing_started"
+    | "record_ready"
+    | "relevance_classified"
+    | "status_classified"
+    | "marked_read",
+  messageId: string
+) {
+  console.log("Email event", {
+    eventType,
     messageId,
   });
 }
 
-export function logFailedToMarkEmailAsRead({
-  messageId,
-  error,
-}: {
-  messageId: string;
-  error: string;
-}) {
-  console.warn("Failed to mark email as read", {
+export function logEmailFailureEvent(
+  eventType: "mark_read_failed" | "rolling_back" | "retrying",
+  {
     messageId,
     error,
-  });
-}
-
-export function logRollingBackEmailProcessing({
-  messageId,
-  createdRecordId,
-}: {
-  messageId: string;
-  createdRecordId: string | null;
-}) {
-  console.log("Rolling back email processing", {
-    messageId,
-    createdRecordId,
-  });
-}
-
-export function logRetryingEmailProcessing({
-  messageId,
-  attempt,
-  maxRetries,
-  delayMs,
-  error,
-}: {
-  messageId: string;
-  attempt: number;
-  maxRetries: number;
-  delayMs: number;
-  error: string;
-}) {
-  console.warn("Retrying email processing", {
-    messageId,
     attempt,
     maxRetries,
-    delayMs,
+  }: {
+    messageId: string;
+    error?: string;
+    attempt?: number;
+    maxRetries?: number;
+  }
+) {
+  console.warn("Email failure event", {
+    eventType,
+    messageId,
     error,
+    attempt,
+    maxRetries,
   });
 }
 
