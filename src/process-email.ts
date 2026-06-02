@@ -3,7 +3,8 @@ import { AirtableRecord, Email, GraphEmail } from "@/shared/types";
 import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
 import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
-import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH } from "./shared/constants";
+import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH, MAX_RATE_LIMIT_RETRIES, PROCESS_RETRY_DELAY_MS } from "./shared/constants";
+import { sleep } from "./shared/retry";
 
 async function enrichEmailWithFullBody(
   email: Email
@@ -97,13 +98,13 @@ async function finalizeClassifiedEmail(
   };
 }
 
-export async function processEmail(graphEmail: GraphEmail): Promise<Email | void> {
-  let createdRecordId: string | null = null
-  let markedAsRead = false
+async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void> {
+  let createdRecordId: string | null = null;
+  let markedAsRead = false;
 
   try {
     const { record, newEmailCreated } = await getOrCreateEmailRecord(graphEmail);
-    
+
     if (newEmailCreated) {
       createdRecordId = record.id;
     }
@@ -135,17 +136,34 @@ export async function processEmail(graphEmail: GraphEmail): Promise<Email | void
       } catch {}
     }
 
-     if (createdRecordId) {
+    if (createdRecordId) {
       try {
         await deleteEmail(createdRecordId);
       } catch {}
     }
 
-    const errorMessage =
-      error instanceof Error ? error.message : String(error);
+    throw error;
+  }
+}
 
-    throw new Error(
-      `Failed to process email (messageId: ${graphEmail.id}): ${errorMessage}`
-    );
+export async function processEmail(graphEmail: GraphEmail): Promise<Email | void> {
+  let attempt = 0;
+
+  while (true) {
+    try {
+      return await attemptProcessEmail(graphEmail);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+
+      if (attempt >= MAX_RATE_LIMIT_RETRIES) {
+        throw new Error(
+          `Failed to process email (messageId: ${graphEmail.id}): ${errorMessage}`
+        );
+      }
+
+      attempt += 1;
+      await sleep(PROCESS_RETRY_DELAY_MS);
+    }
   }
 }

@@ -1,7 +1,7 @@
 export const MAX_FULL_BODY_LENGTH = 8000;
 export const MAX_BODY_PREVIEW_LENGTH = 1000;
-export const PER_EMAIL_DELAY_MS = 2000;
 export const COOLDOWN_EVERY_N_EMAILS = 10;
 export const COOLDOWN_DELAY_MS = 15000;
 export const RATE_LIMIT_COOLDOWN_MS = 30000;
-export const MAX_RATE_LIMIT_RETRIES = 2;
+export const PROCESS_RETRY_DELAY_MS = 3000;
+export const MAX_RATE_LIMIT_RETRIES = 3;
