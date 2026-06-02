@@ -27,14 +27,42 @@ export function isRateLimitError(error: unknown) {
   );
 }
 
-export async function withRateLimitCooldown<T>({
+export function getHttpStatusFromError(error: unknown): number | null {
+  if (!(error instanceof Error)) {
+    return null;
+  }
+
+  const match = error.message.match(/\b(\d{3})\b/);
+
+  return match ? Number(match[1]) : null;
+}
+
+export function isRetryableProcessingError(error: unknown) {
+  if (error instanceof TypeError) {
+    return true;
+  }
+
+  if (isRateLimitError(error)) {
+    return true;
+  }
+
+  const status = getHttpStatusFromError(error);
+
+  return status !== null && status >= 500;
+}
+
+export async function withRetryCooldown<T>({
   operation,
   cooldownMs,
   maxRetries,
+  shouldRetry,
+  onRetry,
 }: {
   operation: () => Promise<T>;
   cooldownMs: number;
   maxRetries: number;
+  shouldRetry: (error: unknown) => boolean;
+  onRetry?: (details: { attempt: number; error: unknown }) => void;
 }): Promise<T> {
   let attempt = 0;
 
@@ -42,15 +70,15 @@ export async function withRateLimitCooldown<T>({
     try {
       return await operation();
     } catch (error) {
-      const isRetryableRateLimit =
-        isRateLimitError(error) && attempt < maxRetries;
+      const retryable = shouldRetry(error) && attempt < maxRetries;
 
-      if (!isRetryableRateLimit) {
+      if (!retryable) {
         throw error;
       }
 
-      await sleep(cooldownMs);
       attempt += 1;
+      onRetry?.({ attempt, error });
+      await sleep(cooldownMs);
     }
   }
 }

@@ -4,7 +4,7 @@ import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/
 import { limitText, normalizeWhitespace } from "@/shared/utils";
 import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
 import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH, MAX_RATE_LIMIT_RETRIES, PROCESS_RETRY_DELAY_MS } from "./shared/constants";
-import { sleep } from "./shared/retry";
+import { isRetryableProcessingError, sleep, withRetryCooldown } from "./shared/retry";
 
 async function enrichEmailWithFullBody(
   email: Email
@@ -103,11 +103,22 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
   let markedAsRead = false;
 
   try {
+    console.log("Processing email", {
+      messageId: graphEmail.id,
+      subject: graphEmail.subject ?? "(none)",
+    });
+
     const { record, newEmailCreated } = await getOrCreateEmailRecord(graphEmail);
 
     if (newEmailCreated) {
       createdRecordId = record.id;
     }
+
+    console.log("Email record ready", {
+      messageId: graphEmail.id,
+      recordId: record.id,
+      newEmailCreated,
+    });
 
     if (record.fields.Status) {
       return record.fields;
@@ -117,6 +128,12 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
 
     const relevanceResult = await classifyEmailRelevance(normalizedEmail);
 
+    console.log("Relevance classified", {
+      messageId: graphEmail.id,
+      isRelevant: relevanceResult.relevance.isRelevant,
+      confidence: relevanceResult.relevance.confidence,
+    });
+
     if (!relevanceResult.relevance.isRelevant) {
       return finalizeIrrelevantEmail(record.id, normalizedEmail, relevanceResult);
     }
@@ -125,11 +142,27 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
       await enrichEmailWithFullBody(normalizedEmail)
     );
 
+    console.log("Status classified", {
+      messageId: graphEmail.id,
+      status: statusResult.status.status,
+      confidence: statusResult.status.confidence,
+    });
+
+    console.log("Marking email as read", {
+      messageId: graphEmail.id,
+    });
+
     await markEmailAsRead(graphEmail.id);
     markedAsRead = true;
 
     return finalizeClassifiedEmail(record.id, normalizedEmail, statusResult);
   } catch (error) {
+    console.log("Rolling back email processing", {
+      messageId: graphEmail.id,
+      markedAsRead,
+      createdRecordId,
+    });
+
     if (markedAsRead) {
       try {
         await markEmailAsUnread(graphEmail.id);
@@ -147,23 +180,31 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
 }
 
 export async function processEmail(graphEmail: GraphEmail): Promise<Email | void> {
-  let attempt = 0;
+  try {
+    return await withRetryCooldown({
+      operation: () => attemptProcessEmail(graphEmail),
+      cooldownMs: PROCESS_RETRY_DELAY_MS,
+      maxRetries: MAX_RATE_LIMIT_RETRIES,
+      shouldRetry: isRetryableProcessingError,
+      onRetry: ({ attempt, error }) => {
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
 
-  while (true) {
-    try {
-      return await attemptProcessEmail(graphEmail);
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        console.warn("Retrying email processing", {
+          messageId: graphEmail.id,
+          attempt,
+          maxRetries: MAX_RATE_LIMIT_RETRIES,
+          delayMs: PROCESS_RETRY_DELAY_MS,
+          error: errorMessage,
+        });
+      },
+    });
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : String(error);
 
-      if (attempt >= MAX_RATE_LIMIT_RETRIES) {
-        throw new Error(
-          `Failed to process email (messageId: ${graphEmail.id}): ${errorMessage}`
-        );
-      }
-
-      attempt += 1;
-      await sleep(PROCESS_RETRY_DELAY_MS);
-    }
+    throw new Error(
+      `Failed to process email (messageId: ${graphEmail.id}): ${errorMessage}`
+    );
   }
 }
