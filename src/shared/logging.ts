@@ -1,30 +1,23 @@
-export function logRunStarted({
-  runId,
-  startedAt,
-  lookbackHours,
-  lastSuccessfulRunAt,
-  windowStart,
-}: {
-  runId: string;
-  startedAt: Date;
-  lookbackHours: string;
-  lastSuccessfulRunAt: string | null;
-  windowStart: Date;
-}) {
-  console.log("Email status updater started", {
+export function logRunEvent(
+  eventType: "started" | "emails_fetched" | "emails_processed" | "finished",
+  {
     runId,
-    startedAt: startedAt.toISOString(),
-    lookbackHours,
-    lastSuccessfulRunAt,
-    windowStart: windowStart.toISOString(),
-  });
-}
-
-export function logRunFinished(runId: string) {
-  console.log("Email status updater finished", {
+    windowStart,
+    count,
+    finishedAt,
+  }: {
+    runId: string;
+    windowStart?: Date;
+    count?: number;
+    finishedAt?: Date;
+  }
+) {
+  console.log("Run event", {
+    eventType,
     runId,
-    finishedAt: new Date().toISOString(),
-    emailsProcessed: 0,
+    windowStart: windowStart?.toISOString(),
+    count,
+    finishedAt: finishedAt?.toISOString(),
   });
 }
 
