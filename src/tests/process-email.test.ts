@@ -239,4 +239,75 @@ describe("processEmail", () => {
         expect(markEmailAsRead).toHaveBeenCalledTimes(1);
         expect(deleteEmail).not.toHaveBeenCalled();
     });
+
+    it("processes a relevant email end to end and persists the final status", async () => {
+        const graphEmail = createGraphEmail();
+
+        const createdRecord = createEmailRecord({
+            id: "rec_created",
+            fields: createEmailFixture({ message_id: graphEmail.id }),
+        });
+
+        const updatedRecord = createEmailRecord({
+            id: "rec_created",
+            fields: createEmailFixture({
+                message_id: graphEmail.id,
+                status: "rejection",
+                classification_confidence: "high",
+                classification_evidence: "rejection wording",
+            }),
+        });
+
+        vi.mocked(getEmail).mockResolvedValue(null);
+        vi.mocked(createEmail).mockResolvedValue(createdRecord);
+
+        vi.mocked(classifyEmailRelevance).mockResolvedValue({
+            email: createEmailFixture({ message_id: graphEmail.id }),
+            relevance: {
+                isRelevant: true,
+                confidence: "high",
+                evidence: ["job application email"],
+            },
+        });
+
+        vi.mocked(fetchEmailWithBody).mockResolvedValue({
+            ...graphEmail,
+            body: {
+                contentType: "text",
+                content: "Full email body",
+            },
+        });
+
+        vi.mocked(classifyEmailStatus).mockResolvedValue({
+            email: createEmailFixture({ message_id: graphEmail.id }),
+            status: {
+                status: "rejection",
+                confidence: "high",
+                evidence: ["rejection wording"],
+            },
+        });
+
+        vi.mocked(updateEmail).mockResolvedValue(updatedRecord);
+        vi.mocked(markEmailAsRead).mockResolvedValue(undefined);
+
+        const result = await processEmail(graphEmail);
+
+        expect(result).toEqual(updatedRecord.fields);
+
+        expect(getEmail).toHaveBeenCalledWith(graphEmail.id);
+        expect(createEmail).toHaveBeenCalledTimes(1);
+        expect(classifyEmailRelevance).toHaveBeenCalledTimes(1);
+        expect(fetchEmailWithBody).toHaveBeenCalledWith(graphEmail.id);
+        expect(classifyEmailStatus).toHaveBeenCalledTimes(1);
+        expect(updateEmail).toHaveBeenCalledWith(
+            createdRecord.id,
+            expect.objectContaining({
+                status: "rejection",
+                classification_confidence: "high",
+                classification_evidence: "rejection wording",
+            })
+        );
+        expect(markEmailAsRead).toHaveBeenCalledWith(graphEmail.id);
+        expect(deleteEmail).not.toHaveBeenCalled();
+    });
 })
