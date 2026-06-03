@@ -1,3 +1,5 @@
+import { Email, GraphEmail } from "./types";
+
 export function logRunEvent(
   eventType: "started" | "emails_fetched" | "emails_processed" | "finished",
   {
@@ -18,6 +20,12 @@ export function logRunEvent(
     windowStart: windowStart?.toISOString(),
     count,
     finishedAt: finishedAt?.toISOString(),
+  });
+}
+
+export function logRunFailureEvent(error: string) {
+  console.error("Run failure event", {
+    error,
   });
 }
 
@@ -61,47 +69,47 @@ export function logEmailFailureEvent(
 
 export function buildRunSummaryMessage({
   runId,
-  fetchedCount,
-  newCount,
-  skippedCount,
-  relevance,
-  status,
+  processedEmails,
+  unprocessedEmails,
 }: {
   runId: string;
-  fetchedCount: number;
-  newCount: number;
-  skippedCount: number;
-  relevance: {
-    reviewedCount: number;
-    relevantCount: number;
-    irrelevantCount: number;
-  };
-  status: {
-    reviewedCount: number;
-    rejectionCount: number;
-    interviewInvitationCount: number;
-    assessmentCount: number;
-    genericUpdateCount: number;
-  };
+  processedEmails: Email[];
+  unprocessedEmails: GraphEmail[];
 }) {
+  const irrelevantCount = processedEmails.filter(
+    (email) => email.status === "irrelevant"
+  ).length;
+
+  const rejectionCount = processedEmails.filter(
+    (email) => email.status === "rejection"
+  ).length;
+
+  const interviewInvitationCount = processedEmails.filter(
+    (email) => email.status === "interview_invitation"
+  ).length;
+
+  const assessmentCount = processedEmails.filter(
+    (email) => email.status === "assessment"
+  ).length;
+
+  const genericUpdateCount = processedEmails.filter(
+    (email) => email.status === "generic_update"
+  ).length;
+
   return [
     "Job Email Run",
     "",
     `Run ID: ${runId}`,
-    `Fetched: ${fetchedCount}`,
-    `New: ${newCount}`,
-    `Skipped: ${skippedCount}`,
+    `Processed: ${processedEmails.length}`,
+    `Unprocessed: ${unprocessedEmails.length}`,
     "",
     "Relevance",
-    `- Reviewed: ${relevance.reviewedCount}`,
-    `- Relevant: ${relevance.relevantCount}`,
-    `- Irrelevant: ${relevance.irrelevantCount}`,
+    `- Irrelevant: ${irrelevantCount}`,
     "",
     "Status",
-    `- Reviewed: ${status.reviewedCount}`,
-    `- Rejections: ${status.rejectionCount}`,
-    `- Interviews: ${status.interviewInvitationCount}`,
-    `- Assessments: ${status.assessmentCount}`,
-    `- Generic Updates: ${status.genericUpdateCount}`,
+    `- Rejections: ${rejectionCount}`,
+    `- Interviews: ${interviewInvitationCount}`,
+    `- Assessments: ${assessmentCount}`,
+    `- Generic Updates: ${genericUpdateCount}`,
   ].join("\n");
 }

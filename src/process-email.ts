@@ -102,7 +102,7 @@ async function finalizeClassifiedEmail(
   };
 }
 
-async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void> {
+async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
   let createdRecordId: string | null = null;
 
   try {
@@ -175,7 +175,7 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email | void
   }
 }
 
-export async function processEmail(graphEmail: GraphEmail): Promise<Email | void> {
+export async function processEmail(graphEmail: GraphEmail): Promise<Email> {
   try {
     return await withRetryCooldown({
       operation: () => attemptProcessEmail(graphEmail),
