@@ -43,7 +43,7 @@ Current state:
   - Keep rules/prompts clear enough to tune manually.
   - Route unknown/low-confidence emails to summary only, not automatic record updates.
 
-- [ ] Map classified emails to Airtable job records.
+- [x] Map classified emails to Airtable job records.
   - Search existing job/application records by company, role, sender, links, and known identifiers.
   - Update the matching record when confidence is good.
   - Create a new record only when enough information exists and the behavior is intentional.
@@ -53,7 +53,7 @@ Current state:
   - Include message ID, classification, action taken, linked Airtable record, errors, and run ID.
   - Make logs useful for reviewing bad classifications later.
 
-- [ ] Add daily summary output.
+- [x] Add daily summary output.
   - Summarize processed count, irrelevant count, status changes, uncertain emails, and errors.
   - Send to Telegram after the full run completes.
   - Keep the summary readable from a phone.

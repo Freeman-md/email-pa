@@ -148,10 +148,10 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
       );
     }
 
-    logEmailEvent("marked_read", graphEmail.id);
-
     try {
       await markEmailAsRead(graphEmail.id);
+
+      logEmailEvent("marked_read", graphEmail.id);
     } catch (error) {
       logEmailFailureEvent("mark_read_failed", {
         messageId: graphEmail.id,
