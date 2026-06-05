@@ -90,7 +90,7 @@ for (const message of messages) {
 
 ---
 
-## 4. Evals matter more once a system becomes agentic
+## 4. Evals matter more once a system becomes agentic [POSTED]
 
 ### Hook
 - once a system starts taking actions, mistakes become more expensive

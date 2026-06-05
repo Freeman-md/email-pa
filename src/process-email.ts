@@ -13,6 +13,10 @@ import { isRetryableProcessingError, withRetryCooldown } from "./shared/retry";
 async function enrichEmailWithFullBody(
   email: Email
 ): Promise<Email> {
+  if (email.body) {
+    return email;
+  }
+
   const fullMessage = await fetchEmailWithBody(email.message_id);
 
   return {
@@ -65,6 +69,12 @@ function normalizeGraphEmail(
       normalizeWhitespace(graphEmail.bodyPreview ?? ""),
       MAX_BODY_PREVIEW_LENGTH
     ),
+    body: graphEmail.body?.content
+      ? limitText(
+          normalizeWhitespace(graphEmail.body.content),
+          MAX_FULL_BODY_LENGTH
+        )
+      : undefined,
   };
 }
 
@@ -148,6 +158,7 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
       );
     }
 
+    // sublet this to a queue later to mark all processed emails as read - in the index.ts
     try {
       await markEmailAsRead(graphEmail.id);
 
