@@ -18,3 +18,19 @@ export function numberFromEnv(name: string, fallback: number) {
   const value = process.env[name];
   return value ? Number(value) : fallback;
 }
+
+export function parseStringArrayEnv(value: string | undefined, envName: string) {
+  if (!value) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+
+    if (Array.isArray(parsed) && parsed.every((item) => typeof item === "string")) {
+      return parsed;
+    }
+  } catch {}
+
+  throw new Error(`${envName} must be a JSON array of strings.`);
+}

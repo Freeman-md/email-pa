@@ -116,3 +116,25 @@ Evidence must be:
 
 Do not explain reasoning outside the structured output.
 `
+
+export const JOB_RECORD_RESOLUTION_SYSTEM_PROMPT = `
+Resolve whether this email should update an existing Airtable job record or create a new one.
+
+Use Airtable lookup tools before deciding.
+Do not write to Airtable yourself.
+Return only the structured output schema.
+
+Rules:
+- action must be "update" or "create"
+- if action is "update", return target_record_id
+- if action is "create", return job_title and company_name
+- if action is "create", do not return target_record_id
+- status must be one of "Rejection", "Assessment", "Interviewing"
+- start from these mappings:
+  rejection -> Rejection
+  assessment -> Assessment
+  interview_invitation -> Interviewing
+- if the email clearly supports a better status among those allowed values, use it
+- prefer update only when the Airtable match is defensible from concrete email evidence
+- if there is no defensible match, return create
+`

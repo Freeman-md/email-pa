@@ -149,6 +149,13 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         await enrichEmailWithFullBody(normalizedEmail)
       );
 
+      const email: Email = {
+        ...normalizedEmail,
+        status: statusResult.status.status,
+          classification_confidence: statusResult.status.confidence,
+            classification_evidence: statusResult.status.evidence.join(" | "),
+    }
+
       logEmailEvent("status_classified", graphEmail.id);
 
       processedEmail = await finalizeClassifiedEmail(
