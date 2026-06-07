@@ -4,6 +4,14 @@ export type AppSetting = {
   "Updated At"?: string;
 };
 
+export type JobStatus = "Rejection" | "Assessment" | "Interviewing";
+
+export type Job = {
+  job_title: string;
+  company_name: string;
+  status: JobStatus;
+};
+
 export type Email = {
   message_id: string;
   received_at?: string;
