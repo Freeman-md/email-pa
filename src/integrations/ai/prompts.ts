@@ -19,7 +19,7 @@ Status definitions:
   The email clearly says the candidate will not move forward, was unsuccessful, was not selected, or the process has ended negatively.
 
 - interview_invitation:
-  The email invites the candidate to an interview, screening call, recruiter call, technical interview, hiring manager conversation, final interview, or asks them to schedule/select a time for such a live conversation.
+  The email invites the candidate to an interview, screening call, recruiter call, technical interview, hiring manager conversation, final interview, or asks them to schedule/select a time for such a live conversation. Linkedin Connection Invitations are ineligible.
 
 - assessment:
   The email asks the candidate to complete a test, assignment, coding challenge, questionnaire, task, video interview, AI interview, psychometric test, or other evaluation step.
