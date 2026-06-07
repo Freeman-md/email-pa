@@ -1,4 +1,5 @@
 import { fetchEmailWithBody, markEmailAsRead, markEmailAsUnread } from "@/integrations/microsoft-graph/service";
+import { createJob, updateJobStatus } from "@/integrations/airtable/repositories/jobs";
 import { AirtableRecord, Email, GraphEmail } from "@/shared/types";
 import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
 import {
@@ -158,7 +159,7 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         statusResult
       );
 
-      await resolveJobRecord({
+      const jobRecordResolution = await resolveJobRecord({
         subject: processedEmail.subject,
         sender_name: processedEmail.sender_name,
         sender_address: processedEmail.sender_address,
@@ -166,6 +167,24 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         body_preview: processedEmail.body_preview,
         status: processedEmail.status,
       });
+
+      switch (jobRecordResolution.action) {
+        case "create":
+          await createJob({
+            job_title: jobRecordResolution.job_title!,
+            company_name: jobRecordResolution.company_name!,
+            status: jobRecordResolution.status!,
+          });
+          break;
+        case "update":
+          await updateJobStatus(
+            jobRecordResolution.target_record_id!,
+            jobRecordResolution.status!
+          );
+          break;
+        case "skip":
+          break;
+      }
     }
 
     // sublet this to a queue later to mark all processed emails as read - in the index.ts

@@ -4,7 +4,7 @@ export type AppSetting = {
   "Updated At"?: string;
 };
 
-export type JobStatus = "Rejection" | "Assessment" | "Interviewing";
+export type JobStatus = "Rejection" | "Assessment" | "Interviewing" | "Applied";
 
 export type Job = {
   job_title: string;

@@ -19,8 +19,10 @@ export const statusSchema = z.object({
 
 export const jobRecordResolutionSchema = z
   .object({
-    action: z.enum(["update", "create"]),
-    status: z.enum(["Rejection", "Assessment", "Interviewing"]),
+    action: z.enum(["update", "create", "skip"]),
+    status: z
+      .enum(["Rejection", "Assessment", "Interviewing", "Applied"])
+      .nullable(),
     target_record_id: z.string().trim().min(1).nullable(),
     job_title: z.string().trim().min(1).nullable(),
     company_name: z.string().trim().min(1).nullable(),
@@ -36,6 +38,14 @@ export const jobRecordResolutionSchema = z
     }
 
     if (value.action === "update") {
+      if (!value.status) {
+        context.addIssue({
+          code: "custom",
+          message: "status is required when action is update",
+          path: ["status"],
+        });
+      }
+
       if (value.job_title) {
         context.addIssue({
           code: "custom",
@@ -54,6 +64,14 @@ export const jobRecordResolutionSchema = z
     }
 
     if (value.action === "create") {
+      if (!value.status) {
+        context.addIssue({
+          code: "custom",
+          message: "status is required when action is create",
+          path: ["status"],
+        });
+      }
+
       if (!value.job_title) {
         context.addIssue({
           code: "custom",
@@ -75,6 +93,40 @@ export const jobRecordResolutionSchema = z
           code: "custom",
           message: "target_record_id must be null when action is create",
           path: ["target_record_id"],
+        });
+      }
+    }
+
+    if (value.action === "skip") {
+      if (value.status) {
+        context.addIssue({
+          code: "custom",
+          message: "status must be null when action is skip",
+          path: ["status"],
+        });
+      }
+
+      if (value.target_record_id) {
+        context.addIssue({
+          code: "custom",
+          message: "target_record_id must be null when action is skip",
+          path: ["target_record_id"],
+        });
+      }
+
+      if (value.job_title) {
+        context.addIssue({
+          code: "custom",
+          message: "job_title must be null when action is skip",
+          path: ["job_title"],
+        });
+      }
+
+      if (value.company_name) {
+        context.addIssue({
+          code: "custom",
+          message: "company_name must be null when action is skip",
+          path: ["company_name"],
         });
       }
     }

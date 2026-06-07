@@ -21,7 +21,8 @@ export async function resolveJobRecord(
   if (
     email.status !== "rejection" &&
     email.status !== "assessment" &&
-    email.status !== "interview_invitation"
+    email.status !== "interview_invitation" &&
+    email.status !== "generic_update"
   ) {
     throw new Error(
       `Job record resolution requires an actionable email status. Received: ${email.status ?? "(none)"}`
@@ -53,6 +54,8 @@ export async function resolveJobRecord(
   if (!response.output_parsed) {
     throw new Error("Job record resolver returned no structured output.");
   }
+
+  console.log(response.output_parsed)
 
   return response.output_parsed;
 }

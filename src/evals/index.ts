@@ -13,6 +13,14 @@ import {
   ProcessedEmailCsvRow,
 } from "@/evals/types";
 
+const DATASET_CATEGORY_ORDER = [
+  "generic-update",
+  "assessment",
+  "interview-invitation",
+  "rejection",
+  "irrelevant",
+] as const;
+
 async function runDatasetCategory(datasetCategory: string) {
   const graphEmailsPath = resolveEvalDatasetPath(
     datasetCategory,
@@ -95,9 +103,17 @@ async function runDatasetCategory(datasetCategory: string) {
 
 const evalsRoot = path.resolve(process.cwd(), "evals");
 const entries = await fs.readdir(evalsRoot, { withFileTypes: true });
-const datasetCategories = entries
+const discoveredDatasetCategories = entries
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name);
+const datasetCategories = [
+  ...DATASET_CATEGORY_ORDER.filter((category) =>
+    discoveredDatasetCategories.includes(category)
+  ),
+  ...discoveredDatasetCategories.filter(
+    (category) => !DATASET_CATEGORY_ORDER.includes(category as typeof DATASET_CATEGORY_ORDER[number])
+  ),
+];
 
 for (const datasetCategory of datasetCategories) {
   await runDatasetCategory(datasetCategory);

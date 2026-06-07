@@ -131,6 +131,8 @@ Decision Rules:
 - use the email subject as the strongest signal for job_title when present
 - use sender_name, sender_address, body, and body_preview to support job_title and company_name extraction
 - do not invent a job_title or company_name that is not defensible from concrete email evidence
+- do not treat workflow phrases like "assessment", "technical challenge", "coding challenge", "take-home exercise", or "interview invitation" as the job_title unless the email clearly ties them to a specific role
+- if the email mentions only a process step or activity but no defensible role title, do not use that process-step wording as the job_title
 - first extract the best-supported company_name and job_title from the email before using Airtable lookup tools
 - first narrow Airtable candidates using whichever of company_name and job_title is defensibly supported by the email
 - if both company_name and job_title are defensibly supported, narrow candidates using both fields together
@@ -138,7 +140,10 @@ Decision Rules:
 - do not choose update from a broad company-only candidate set when multiple records remain
 - do not choose update if the selected Airtable record has a different company_name from the one supported by the email
 - do not choose update if the selected Airtable record's job_title is not defensibly supported by the email when multiple role candidates exist for the same company
-- action must be either "update" or "create"
+- for generic_update emails, first determine whether the email is truly an application acknowledgement or application-in-review update for a specific role
+- if a generic_update email clearly confirms that an application was received, logged, or is under review for a specific role, map it to Applied and continue with normal record resolution
+- if a generic_update email is not clearly an application acknowledgement for a specific role, return skip
+- action must be either "update", "create", or "skip"
 - prefer update only when the Airtable match is defensible based on concrete evidence from the email
 - if there is no defensible match, return create
 
@@ -153,11 +158,16 @@ Create Requirements:
 - if action is "create", do not return target_record_id
 - if action is "create", both job_title and company_name must be supported by concrete email evidence
 
+Skip Requirements:
+- if action is "skip", return null for status, target_record_id, job_title, and company_name
+- use skip for generic_update emails that do not clearly confirm a submitted application for a specific role
+
 Status Mapping:
-- status must be one of "Rejection", "Assessment", "Interviewing"
+- status must be one of "Rejection", "Assessment", "Interviewing", or "Applied"
 - start from these mappings:
   rejection -> Rejection
   assessment -> Assessment
   interview_invitation -> Interviewing
+- generic_update -> Applied only when the email clearly confirms a submitted application or an application-under-review update for a specific role
 - if the email clearly supports a better status among the allowed values, use it
 `
