@@ -9,9 +9,10 @@ export function getAirtableConfig() {
 }
 
 export function getAirtableMcpConfig() {
-  const serverUrl = optional("AIRTABLE_MCP_SERVER_URL");
+  const serverUrl = required("AIRTABLE_MCP_SERVER_URL");
   const rawAllowedTools = optional("AIRTABLE_MCP_ALLOWED_TOOLS");
   const requireApproval = optional("AIRTABLE_MCP_REQUIRE_APPROVAL", "never");
+  const authorization = required("AIRTABLE_MCP_AUTHORIZATION")
 
   return {
     serverUrl,
@@ -20,5 +21,6 @@ export function getAirtableMcpConfig() {
       "AIRTABLE_MCP_ALLOWED_TOOLS"
     ),
     requireApproval,
+    authorization
   };
 }

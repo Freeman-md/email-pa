@@ -10,9 +10,13 @@ import { jobRecordResolutionSchema } from "./schemas";
 const { defaultModel, classification } = getAiConfig();
 
 type JobRecordResolution = z.infer<typeof jobRecordResolutionSchema>;
+type JobRecordResolutionInput = Pick<
+  Email,
+  "subject" | "sender_name" | "sender_address" | "body" | "body_preview" | "status"
+>;
 
 export async function resolveJobRecord(
-  email: Email
+  email: JobRecordResolutionInput
 ): Promise<JobRecordResolution> {
   if (
     email.status !== "rejection" &&
@@ -24,11 +28,7 @@ export async function resolveJobRecord(
     );
   }
 
-  const { serverUrl, allowedTools, requireApproval } = getAirtableMcpConfig();
-
-  if (!serverUrl) {
-    throw new Error("Missing AIRTABLE_MCP_SERVER_URL.");
-  }
+  const { serverUrl, allowedTools, requireApproval, authorization } = getAirtableMcpConfig();
 
   const response = await openai.responses.parse({
     model: defaultModel,
@@ -42,6 +42,7 @@ export async function resolveJobRecord(
         server_url: serverUrl,
         allowed_tools: allowedTools,
         require_approval: requireApproval === "always" ? "always" : "never",
+        authorization
       },
     ],
     text: {

@@ -6,6 +6,7 @@ import {
   logEmailFailureEvent,
 } from "@/shared/logging";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
+import { resolveJobRecord } from "./integrations/ai/agents";
 import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
 import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH, MAX_RATE_LIMIT_RETRIES, PROCESS_RETRY_DELAY_MS } from "./shared/constants";
 import { isRetryableProcessingError, withRetryCooldown } from "./shared/retry";
@@ -149,13 +150,6 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         await enrichEmailWithFullBody(normalizedEmail)
       );
 
-      const email: Email = {
-        ...normalizedEmail,
-        status: statusResult.status.status,
-          classification_confidence: statusResult.status.confidence,
-            classification_evidence: statusResult.status.evidence.join(" | "),
-    }
-
       logEmailEvent("status_classified", graphEmail.id);
 
       processedEmail = await finalizeClassifiedEmail(
@@ -163,6 +157,15 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         normalizedEmail,
         statusResult
       );
+
+      await resolveJobRecord({
+        subject: processedEmail.subject,
+        sender_name: processedEmail.sender_name,
+        sender_address: processedEmail.sender_address,
+        body: processedEmail.body,
+        body_preview: processedEmail.body_preview,
+        status: processedEmail.status,
+      });
     }
 
     // sublet this to a queue later to mark all processed emails as read - in the index.ts
