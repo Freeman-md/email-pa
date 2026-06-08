@@ -1,8 +1,12 @@
+import OpenAI from "openai";
+
 export type AppSetting = {
   Key: string;
   Value?: string;
   "Updated At"?: string;
 };
+
+export type ResponseParseOptions = Parameters<OpenAI["responses"]["parse"]>[0];
 
 export type JobStatus = "Rejection" | "Assessment" | "Interviewing" | "Applied";
 
@@ -10,6 +14,14 @@ export type Job = {
   job_title: string;
   company_name: string;
   status: JobStatus;
+};
+
+export type JobRecordResolution = {
+  action: "update" | "create" | "skip";
+  status: JobStatus | null;
+  target_record_id: string | null;
+  job_title: string | null;
+  company_name: string | null;
 };
 
 export type Email = {
@@ -64,6 +76,24 @@ export type GraphEmailsResponse = {
   "@odata.nextLink"?: string;
 };
 
+export type TelegramSendMessageInput = {
+  text: string;
+};
+
+export type TelegramSendMessageResponse = {
+  ok: boolean;
+  result?: {
+    message_id: number;
+    chat: {
+      id: number;
+      type: string;
+    };
+    date: number;
+    text?: string;
+  };
+  description?: string;
+};
+
 export type EmailRelevanceClassification = {
   isRelevant: boolean;
   confidence: "high" | "medium" | "low";
@@ -89,6 +119,11 @@ export type ClassifiedEmailStatus = {
   email: Email;
   status: EmailStatusClassification;
 };
+
+export type JobRecordResolutionInput = Pick<
+  Email,
+  "subject" | "sender_name" | "sender_address" | "body" | "body_preview" | "status"
+>;
 
 
 export type RateLimitError = {

@@ -1,4 +1,8 @@
 import { getTelegramConfig } from "@/config/telegram";
+import {
+  TelegramSendMessageInput,
+  TelegramSendMessageResponse,
+} from "@/shared/types";
 
 export async function sendTelegramMessage({
   text,

@@ -1,4 +1,4 @@
-import { fetchEmailWithBody, markEmailAsRead, markEmailAsUnread } from "@/integrations/microsoft-graph/service";
+import { fetchEmailWithBody, markEmailAsRead } from "@/integrations/microsoft-graph/service";
 import { createJob, updateJobStatus } from "@/integrations/airtable/repositories/jobs";
 import { AirtableRecord, Email, GraphEmail } from "@/shared/types";
 import { createEmail, deleteEmail, getEmail, updateEmail } from "@/integrations/airtable/repositories/emails";
@@ -7,8 +7,11 @@ import {
   logEmailFailureEvent,
 } from "@/shared/logging";
 import { limitText, normalizeWhitespace } from "@/shared/utils";
-import { resolveJobRecord } from "./integrations/ai/agents";
-import { classifyEmailRelevance, classifyEmailStatus } from "./integrations/ai/classification";
+import {
+  classifyEmailRelevance,
+  classifyEmailStatus,
+  resolveJobRecord,
+} from "./integrations/ai/operations";
 import { MAX_BODY_PREVIEW_LENGTH, MAX_FULL_BODY_LENGTH, MAX_RATE_LIMIT_RETRIES, PROCESS_RETRY_DELAY_MS } from "./shared/constants";
 import { isRetryableProcessingError, withRetryCooldown } from "./shared/retry";
 

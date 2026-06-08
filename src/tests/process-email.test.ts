@@ -1,4 +1,4 @@
-import { classifyEmailRelevance, classifyEmailStatus } from '@/integrations/ai/classification'
+import { classifyEmailRelevance, classifyEmailStatus } from '@/integrations/ai/operations'
 import { createEmail, deleteEmail, getEmail, updateEmail } from '@/integrations/airtable/repositories/emails'
 import { fetchEmailWithBody, markEmailAsRead, markEmailAsUnread } from '@/integrations/microsoft-graph/service'
 import { processEmail } from "@/process-email";
@@ -18,7 +18,7 @@ vi.mock("@/integrations/microsoft-graph/service", () => ({
     markEmailAsUnread: vi.fn()
 }))
 
-vi.mock("@/integrations/ai/classification", () => ({
+vi.mock("@/integrations/ai/operations", () => ({
     classifyEmailRelevance: vi.fn(),
     classifyEmailStatus: vi.fn()
 }))
