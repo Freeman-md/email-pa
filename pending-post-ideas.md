@@ -1,6 +1,6 @@
 # Pending Post Ideas
 
-## 1. The smallest rate-limit fix was the right one
+## 1. The smallest rate-limit fix was the right one [POSTED]
 
 ### Hook
 - I hit Airtable rate limits.
