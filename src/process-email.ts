@@ -117,6 +117,80 @@ async function finalizeClassifiedEmail(
   };
 }
 
+async function resolveAndApplyJobRecord(email: Email): Promise<void> {
+  const jobRecordResolution = await resolveJobRecord({
+    subject: email.subject,
+    sender_name: email.sender_name,
+    sender_address: email.sender_address,
+    body: email.body,
+    body_preview: email.body_preview,
+    status: email.status,
+  });
+
+  switch (jobRecordResolution.action) {
+    case "create": {
+      const { job_title, company_name, status } = jobRecordResolution;
+
+      if (!job_title || !company_name || !status) {
+        throw new Error("Create resolution is missing required job fields.");
+      }
+
+      await createJob({
+        job_title,
+        company_name,
+        status,
+      });
+      return;
+    }
+    case "update": {
+      const { target_record_id, status } = jobRecordResolution;
+
+      if (!target_record_id || !status) {
+        throw new Error("Update resolution is missing required job fields.");
+      }
+
+      await updateJobStatus(target_record_id, status);
+      return;
+    }
+    case "skip":
+      return;
+  }
+}
+
+async function processRelevantEmail(
+  recordId: string,
+  email: Email,
+  messageId: string
+): Promise<Email> {
+  const statusResult = await classifyEmailStatus(
+    await enrichEmailWithFullBody(email)
+  );
+
+  logEmailEvent("status_classified", messageId);
+
+  const processedEmail = await finalizeClassifiedEmail(
+    recordId,
+    email,
+    statusResult
+  );
+
+  await resolveAndApplyJobRecord(processedEmail);
+
+  return processedEmail;
+}
+
+async function markEmailAsReadIfPossible(messageId: string): Promise<void> {
+  try {
+    await markEmailAsRead(messageId);
+    logEmailEvent("marked_read", messageId);
+  } catch (error) {
+    logEmailFailureEvent("mark_read_failed", {
+      messageId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
 async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
   let createdRecordId: string | null = null;
 
@@ -150,57 +224,14 @@ async function attemptProcessEmail(graphEmail: GraphEmail): Promise<Email> {
         relevanceResult
       );
     } else {
-      const statusResult = await classifyEmailStatus(
-        await enrichEmailWithFullBody(normalizedEmail)
-      );
-
-      logEmailEvent("status_classified", graphEmail.id);
-
-      processedEmail = await finalizeClassifiedEmail(
+      processedEmail = await processRelevantEmail(
         record.id,
         normalizedEmail,
-        statusResult
+        graphEmail.id
       );
-
-      const jobRecordResolution = await resolveJobRecord({
-        subject: processedEmail.subject,
-        sender_name: processedEmail.sender_name,
-        sender_address: processedEmail.sender_address,
-        body: processedEmail.body,
-        body_preview: processedEmail.body_preview,
-        status: processedEmail.status,
-      });
-
-      switch (jobRecordResolution.action) {
-        case "create":
-          await createJob({
-            job_title: jobRecordResolution.job_title!,
-            company_name: jobRecordResolution.company_name!,
-            status: jobRecordResolution.status!,
-          });
-          break;
-        case "update":
-          await updateJobStatus(
-            jobRecordResolution.target_record_id!,
-            jobRecordResolution.status!
-          );
-          break;
-        case "skip":
-          break;
-      }
     }
 
-    // sublet this to a queue later to mark all processed emails as read - in the index.ts
-    try {
-      await markEmailAsRead(graphEmail.id);
-
-      logEmailEvent("marked_read", graphEmail.id);
-    } catch (error) {
-      logEmailFailureEvent("mark_read_failed", {
-        messageId: graphEmail.id,
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
+    await markEmailAsReadIfPossible(graphEmail.id);
 
     return processedEmail;
   } catch (error) {
